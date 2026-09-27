@@ -1,0 +1,45 @@
+# Private working documents: exist only on the Mac, never in the tree (plan, phases, worklog, and context files live in private/)
+CLAUDE.md
+private/
+
+# Secrets and local config, never commit (.env.example carries names only)
+.env
+.env.*
+!.env.example
+fleet/.env
+
+# GAM: config, OAuth client file, tokens, service account (GAM7 keeps these in ~/.gam; listed in case one lands here)
+gam.cfg
+oauth2.txt
+oauth2service.json
+client_secrets.json
+.gam/
+
+# Keys, certificates, signing requests: APNs CSR and certificate, Fleet server private key, cloudflared credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*.csr
+.cloudflared/
+fleet-server-private-key*
+
+# Fleet: enroll secrets and the fleetd installer (the package bakes in the server URL and the enroll secret)
+*.pkg
+fleet/enroll-secret*
+
+# Exported profiles and screenshots before redaction: raw/ is the drop zone, the redacted copy sits beside it
+mdm/profiles/raw/
+docs/evidence/raw/
+*.unredacted.*
+
+# macOS
+.DS_Store
+._*
+
+# Editors and Claude Code personal settings
+.vscode/
+.idea/
+.claude/settings.local.json

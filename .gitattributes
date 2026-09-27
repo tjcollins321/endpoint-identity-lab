@@ -1,0 +1,14 @@
+# Normalize line endings on commit; a Windows clone exists for the ChromeOS Flex work
+* text=auto
+
+# Files that run or parse on macOS and Linux only: always LF on checkout
+*.sh text eol=lf
+*.mobileconfig text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Evidence
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
