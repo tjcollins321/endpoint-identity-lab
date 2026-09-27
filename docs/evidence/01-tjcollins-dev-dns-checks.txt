@@ -1,0 +1,62 @@
+# tjcollins.dev: zone delegation and record checks from the workstation
+# Captured 2026-09-28. Queries go to the registry, Cloudflare's nameservers, or 1.1.1.1 only; no local resolver.
+
+## 1. Delegation published by the .dev registry (asks a registry nameserver directly, no recursion)
+$ dig +norecurse NS tjcollins.dev @ns-tld1.charlestonroadregistry.com.
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 28475
+;; flags: qr; QUERY: 1, ANSWER: 0, AUTHORITY: 2, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; AUTHORITY SECTION:
+tjcollins.dev.		10800	IN	NS	doug.ns.cloudflare.com.
+tjcollins.dev.		10800	IN	NS	chloe.ns.cloudflare.com.
+
+
+## 2. The zone answers from a Cloudflare nameserver with the authoritative (aa) flag
+$ dig SOA tjcollins.dev @chloe.ns.cloudflare.com
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 26923
+;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+;; WARNING: recursion requested but not available
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; ANSWER SECTION:
+tjcollins.dev.		1800	IN	SOA	chloe.ns.cloudflare.com. dns.cloudflare.com. 2416038858 10000 2400 604800 1800
+
+
+## 3. NS as seen by a public resolver
+$ dig +short NS tjcollins.dev @1.1.1.1
+doug.ns.cloudflare.com.
+chloe.ns.cloudflare.com.
+
+## 4. Record add test: TXT _lab-test added in the dashboard, read back from both nameservers
+$ dig +short TXT _lab-test.tjcollins.dev @chloe.ns.cloudflare.com
+"phase1 record test 2026-09-27"
+$ dig +short TXT _lab-test.tjcollins.dev @doug.ns.cloudflare.com
+"phase1 record test 2026-09-27"
+
+## 5. Registry record (RDAP): status, nameservers, registration and expiry
+$ curl -sL https://rdap.org/domain/tjcollins.dev  (fields extracted)
+status: add period, client transfer prohibited
+nameservers: chloe.ns.cloudflare.com, doug.ns.cloudflare.com
+registration: 2026-09-27
+expiration: 2027-09-27
+
+## 6. Record removed in the dashboard; both nameservers now answer NXDOMAIN for it (2026-09-28)
+$ dig TXT _lab-test.tjcollins.dev @chloe.ns.cloudflare.com   (status line and answer count)
+->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 13042
+flags: qr aa rd; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+$ dig TXT _lab-test.tjcollins.dev @doug.ns.cloudflare.com   (status line and answer count)
+->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 32960
+flags: qr aa rd; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+## 7. DNSSEC enabled in the dashboard (one click; Cloudflare Registrar publishes the DS itself). Live by 2026-09-28
+$ dig +short DS tjcollins.dev
+2371 13 2 97382FEB509A2C1B683A8E9696BF8A7996B9AAA9D643DBB77AEF2940 18215CD6
+$ dig +short DNSKEY tjcollins.dev | wc -l
+2
+$ dig +dnssec SOA tjcollins.dev @1.1.1.1   (flags line; "ad" = the resolver validated the signature chain)
+flags: qr rd ra ad
