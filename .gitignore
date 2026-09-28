@@ -43,3 +43,11 @@ docs/evidence/raw/
 .vscode/
 .idea/
 .claude/settings.local.json
+
+# Fleet license key (Premium trial): lives outside the repo; goes into fleet/.env as FLEET_LICENSE_KEY
+fleet-trial-key*
+fleet-license-key*
+
+# Chrome Enterprise Core browser enrollment token: lives outside the repo; a GitOps profile carrying it uses variable substitution
+CloudManagementEnrollmentToken*
+chrome-enrollment-token*
