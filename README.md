@@ -14,7 +14,10 @@ misread. Runbooks and decisions sit at the repository root; design, demo script,
 redacted evidence are under `docs/`. Shell convention: macOS scripts are zsh; GAM scripts are
 bash 3.2-compatible and shellcheck-clean.
 
-> **Build status (updated as the repository grows):** repository scaffold, and the lab domain's
-> DNS zone active at Cloudflare with DNSSEC on (2026-09-27; transcript in `docs/evidence/`). No
-> tenant, MDM, or device is enrolled yet. Nothing here claims more than the tree contains at the
-> time of the commit you are reading.
+> **Build status (updated as the repository grows):** repository scaffold; the lab domain's DNS
+> zone active at Cloudflare with DNSSEC on (2026-09-27); the Google Workspace tenant with
+> organizational units, groups, enforced 2-Step Verification, and session policy
+> (`workspace/tenant-settings.md`); GAM on the admin workstation and the five lifecycle scripts in
+> `workspace/gam/`, run end to end (2026-09-28; transcripts in `docs/evidence/`); the Workspace
+> sections of the onboarding and offboarding runbooks. No MDM or device is enrolled yet. Nothing
+> here claims more than the tree contains at the time of the commit you are reading.

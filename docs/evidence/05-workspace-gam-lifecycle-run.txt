@@ -1,0 +1,139 @@
+Google Workspace lifecycle run with the GAM scripts in workspace/gam/, 2026-09-28
+
+Run on the admin workstation against fictional accounts created for the purpose and deleted at
+the end. Every script was run twice to show the second run changes nothing; the third
+create-user call uses a different first name with the same surname to show the username
+collision rule. The delete step is shown refusing an account whose Drive was never transferred,
+then forced. Each block is the command as typed, its output, and its exit code. Times are offsets
+from the first line. The two transfer identifiers are opaque request IDs, not credentials.
+
+$ ./create-user.sh Dana Okafor
+t+0:00    creating dokafor@tjcollins.dev (Dana Okafor) in /Staff
+User: dokafor@tjcollins.dev, Created
+t+0:02    verify:
+    First Name: Dana
+    Last Name: Okafor
+    Google Org Unit Path: /Staff
+t+0:04    note: Google holds the new account (reason WEB_LOGIN_REQUIRED); the user clears it at the first web sign-in, an admin cannot
+exit=0
+
+$ ./create-user.sh Dana Okafor
+t+0:06    exists: dokafor@tjcollins.dev (Dana Okafor); nothing to do
+exit=0
+
+$ ./create-user.sh Drew Okafor
+t+0:07    taken: dokafor@tjcollins.dev belongs to Dana Okafor; trying the next suffix
+t+0:09    creating dokafor2@tjcollins.dev (Drew Okafor) in /Staff
+User: dokafor2@tjcollins.dev, Created
+t+0:11    verify:
+    First Name: Drew
+    Last Name: Okafor
+    Account Suspended: True
+    Suspension Reason: WEB_LOGIN_REQUIRED
+    Must Change Password: True
+    Google Org Unit Path: /Staff
+t+0:15    note: Google holds the new account (reason WEB_LOGIN_REQUIRED); the user clears it at the first web sign-in, an admin cannot
+exit=0
+
+$ ./add-to-groups.sh dokafor all-staff engineering
+t+0:19    adding dokafor@tjcollins.dev to all-staff@tjcollins.dev
+Group: all-staff@tjcollins.dev, Add 1 Member
+  Group: all-staff@tjcollins.dev, Member: dokafor@tjcollins.dev, Added: Role: MEMBER
+t+0:23    adding dokafor@tjcollins.dev to engineering@tjcollins.dev
+Group: engineering@tjcollins.dev, Add 1 Member
+  Group: engineering@tjcollins.dev, Member: dokafor@tjcollins.dev, Added: Role: MEMBER
+t+0:24    verify:
+  dokafor@tjcollins.dev is a member of all-staff@tjcollins.dev
+  dokafor@tjcollins.dev is a member of engineering@tjcollins.dev
+exit=0
+
+$ ./add-to-groups.sh dokafor all-staff engineering
+t+0:29    member already: dokafor@tjcollins.dev in all-staff@tjcollins.dev
+t+0:32    member already: dokafor@tjcollins.dev in engineering@tjcollins.dev
+t+0:32    verify:
+  dokafor@tjcollins.dev is a member of all-staff@tjcollins.dev
+  dokafor@tjcollins.dev is a member of engineering@tjcollins.dev
+exit=0
+
+$ ./suspend.sh dokafor
+t+0:36    note: dokafor@tjcollins.dev is under a Google hold (reason WEB_LOGIN_REQUIRED); suspending anyway so the offboarding is recorded
+t+0:36    deprovisioning dokafor@tjcollins.dev: app passwords, backup codes, OAuth tokens, sign-out
+User: dokafor@tjcollins.dev, Deprovision 0 Application Specific Password IDs
+User: dokafor@tjcollins.dev, Deprovision 0 Backup Verification Codes
+User: dokafor@tjcollins.dev, Deprovision 0 Access Tokens
+User: dokafor@tjcollins.dev, Signed Out
+User: dokafor@tjcollins.dev, Deprovisioned
+Getting Application Specific Password IDs for dokafor@tjcollins.dev
+Getting Backup Verification Codes for dokafor@tjcollins.dev
+Getting Access Tokens for dokafor@tjcollins.dev
+t+0:39    suspending dokafor@tjcollins.dev
+User: dokafor@tjcollins.dev, Suspended
+t+0:40    verify:
+User: dokafor@tjcollins.dev, Account Suspended: True, Suspension Reason: WEB_LOGIN_REQUIRED
+exit=0
+
+$ ./suspend.sh dokafor
+t+0:46    note: dokafor@tjcollins.dev is under a Google hold (reason WEB_LOGIN_REQUIRED); suspending anyway so the offboarding is recorded
+t+0:46    deprovisioning dokafor@tjcollins.dev: app passwords, backup codes, OAuth tokens, sign-out
+User: dokafor@tjcollins.dev, Deprovision 0 Application Specific Password IDs
+User: dokafor@tjcollins.dev, Deprovision 0 Backup Verification Codes
+User: dokafor@tjcollins.dev, Deprovision 0 Access Tokens
+User: dokafor@tjcollins.dev, Signed Out
+User: dokafor@tjcollins.dev, Deprovisioned
+Getting Application Specific Password IDs for dokafor@tjcollins.dev
+Getting Backup Verification Codes for dokafor@tjcollins.dev
+Getting Access Tokens for dokafor@tjcollins.dev
+t+0:48    suspending dokafor@tjcollins.dev
+User: dokafor@tjcollins.dev, Suspended
+t+0:50    verify:
+User: dokafor@tjcollins.dev, Account Suspended: True, Suspension Reason: WEB_LOGIN_REQUIRED
+exit=0
+
+$ ./transfer-drive.sh dokafor aengineer
+t+0:57    transferring Drive ownership: dokafor@tjcollins.dev to aengineer@tjcollins.dev (private and shared files)
+Transfer Request Created
+  Transfer ID: AKrEtIa01R78bmXBj_3VGDa3gago5XOW-vi95fcbInNybOISvqphCJfI-Zg0QcRP6QNU8q7Ar4bOIkMp1VhLsFaepqqhcHVn3A
+  Service: Drive and Docs
+  From: dokafor@tjcollins.dev
+  To: aengineer@tjcollins.dev
+Transfer ID: AKrEtIa01R78bmXBj_3VGDa3gago5XOW-vi95fcbInNybOISvqphCJfI-Zg0QcRP6QNU8q7Ar4bOIkMp1VhLsFaepqqhcHVn3A, Status: completed
+Waiting for Data Transfer to complete. Sleeping 5 seconds
+t+1:05    verify:
+id,requestTime,oldOwnerUserEmail,newOwnerUserEmail,overallTransferStatusCode,application,applicationId,status,PRIVACY_LEVEL
+AKrEtIa01R78bmXBj_3VGDa3gago5XOW-vi95fcbInNybOISvqphCJfI-Zg0QcRP6QNU8q7Ar4bOIkMp1VhLsFaepqqhcHVn3A,2026-09-28,dokafor@tjcollins.dev,aengineer@tjcollins.dev,completed,Drive and Docs,55656082996,completed,PRIVATE SHARED
+exit=0
+
+$ ./transfer-drive.sh dokafor aengineer
+t+1:14    already transferred: Drive of dokafor@tjcollins.dev to aengineer@tjcollins.dev; nothing to do
+id,requestTime,oldOwnerUserEmail,newOwnerUserEmail,overallTransferStatusCode,application,applicationId,status,PRIVACY_LEVEL
+AKrEtIa01R78bmXBj_3VGDa3gago5XOW-vi95fcbInNybOISvqphCJfI-Zg0QcRP6QNU8q7Ar4bOIkMp1VhLsFaepqqhcHVn3A,2026-09-28,dokafor@tjcollins.dev,aengineer@tjcollins.dev,completed,Drive and Docs,55656082996,completed,PRIVATE SHARED
+exit=0
+
+$ ./delete.sh dokafor2
+error: no completed Drive transfer from dokafor2@tjcollins.dev; run transfer-drive.sh first, or use -f
+exit=1
+
+$ ./delete.sh -f dokafor2
+t+1:21    deleting dokafor2@tjcollins.dev
+User: dokafor2@tjcollins.dev, Deleted
+t+1:22    verify:
+User: dokafor2@tjcollins.dev, Does not exist
+exit=0
+
+$ ./delete.sh dokafor
+t+1:26    deleting dokafor@tjcollins.dev
+User: dokafor@tjcollins.dev, Deleted
+t+1:27    verify:
+User: dokafor@tjcollins.dev, Does not exist
+exit=0
+
+$ ./delete.sh dokafor
+t+1:29    already absent: dokafor@tjcollins.dev; nothing to do
+exit=0
+
+--- directory one minute after the run (the user list index lags a direct lookup by about a minute) ---
+$ gam print users fields primaryemail,ou,suspended
+primaryEmail,orgUnitPath,suspended,suspensionReason,suspensionTime
+acontractor@tjcollins.dev,/Contractors,False,,
+aengineer@tjcollins.dev,/Staff,False,,
+tj@tjcollins.dev,/,False,,

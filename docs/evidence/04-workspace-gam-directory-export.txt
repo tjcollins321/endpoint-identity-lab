@@ -1,0 +1,37 @@
+Google Workspace directory export with GAM, 2026-09-28
+
+Run on the admin workstation with GAM 7.48.14, authorized as the tenant's super admin through
+the admin OAuth client only (no service-account key, no domain-wide delegation). Each block is
+the command as typed, followed by GAM's CSV output. gam.cfg sets the default domain and a local
+timezone, so addresses are complete and times are omitted, leaving dates. Fields were chosen so that nothing
+here grants access or identifies a person outside the lab: no object IDs, no recovery contacts,
+no customer ID.
+
+$ gam print ous fields orgunitpath,name,description,parentorgunitpath
+orgUnitPath,name,description,parentOrgUnitPath
+/Contractors,Contractors,,/
+/Devices,Devices,,/
+/Staff,Staff,,/
+/Workspace Guests,Workspace Guests,A dedicated Org Unit for external guests,/
+
+$ gam print users fields primaryemail,firstname,lastname,ou,suspended,isadmin,isenrolledin2sv,isenforcedin2sv,creationtime,lastlogintime
+primaryEmail,name.givenName,name.familyName,orgUnitPath,suspended,suspensionReason,suspensionTime,isAdmin,isDelegatedAdmin,isEnrolledIn2Sv,isEnforcedIn2Sv,creationTime,lastLoginTime
+acontractor@tjcollins.dev,Anthony,Contractor,/Contractors,False,,,False,False,False,True,2026-09-27,Never
+aengineer@tjcollins.dev,Alex,Engineer,/Staff,False,,,False,False,False,True,2026-09-27,Never
+tj@tjcollins.dev,Thomas,Collins,/,False,,,True,False,True,True,2026-09-27,2026-09-28
+
+$ gam print groups fields email,name,description
+email,name,description
+all-staff@tjcollins.dev,all-staff,
+contractors@tjcollins.dev,contractors,
+engineering@tjcollins.dev,engineering,
+
+$ gam print group-members fields group,email,role,type,status
+group,type,role,status,email
+all-staff@tjcollins.dev,USER,MEMBER,ACTIVE,aengineer@tjcollins.dev
+all-staff@tjcollins.dev,USER,OWNER,ACTIVE,tj@tjcollins.dev
+contractors@tjcollins.dev,USER,MEMBER,ACTIVE,acontractor@tjcollins.dev
+contractors@tjcollins.dev,USER,OWNER,ACTIVE,tj@tjcollins.dev
+engineering@tjcollins.dev,USER,MEMBER,ACTIVE,aengineer@tjcollins.dev
+engineering@tjcollins.dev,USER,OWNER,ACTIVE,tj@tjcollins.dev
+
