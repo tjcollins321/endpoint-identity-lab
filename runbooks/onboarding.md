@@ -81,8 +81,8 @@ Success looks like:
 
 ## 4. Devices
 
-Written with the device phases: a Mac into Jamf Now (`mac-enrollment.md`), a Mac into Fleet
-(`mac-provisioning.md`), an iPad (`ipados-enrollment.md`), a ChromeOS device
+Written with the device phases: a Mac into Jamf Now (`mac-enrollment-jamf.md`), a Mac into Fleet
+(`mac-provisioning-fleet.md`), an iPad (`ipados-enrollment-jamf.md`), a ChromeOS device
 (`chromeos-enrollment.md`).
 
 ## 5. Verify

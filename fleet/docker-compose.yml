@@ -1,0 +1,106 @@
+# Fleet on the admin workstation: MySQL, Redis, a one-shot schema step, the Fleet server, and a
+# Cloudflare Tunnel connector that publishes it as https://fleet.<domain>. TLS ends at Cloudflare;
+# Fleet itself listens on plain HTTP inside the Compose network and is not exposed beyond
+# localhost. Secrets come from fleet/.env (ignored); fleet/.env.example lists the names.
+#
+#   docker compose --env-file .env up -d        # from fleet/
+#   docker compose ps                           # every service healthy, prepare-db exited 0
+#
+# Versions are pinned to what Fleet tests against (MySQL 8.0.44, Redis 7) and the Fleet release
+# current when the lab was built. Bump all four together and re-run prepare-db.
+
+name: fleet
+
+x-fleet-env: &fleet-env
+  FLEET_MYSQL_ADDRESS: mysql:3306
+  FLEET_MYSQL_DATABASE: fleet
+  FLEET_MYSQL_USERNAME: fleet
+  FLEET_MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+  FLEET_REDIS_ADDRESS: redis:6379
+  FLEET_SERVER_ADDRESS: 0.0.0.0:8080
+  FLEET_SERVER_TLS: "false"
+  # Required for MDM; at least 32 bytes; generated once and never rotated after MDM is on.
+  FLEET_SERVER_PRIVATE_KEY: ${FLEET_SERVER_PRIVATE_KEY:?set FLEET_SERVER_PRIVATE_KEY in .env}
+  # Empty means Fleet Free. The Premium trial key unlocks FileVault enforcement and escrow.
+  FLEET_LICENSE_KEY: ${FLEET_LICENSE_KEY:-}
+  FLEET_LOGGING_JSON: "true"
+
+services:
+  mysql:
+    image: mysql:8.0.44
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max_allowed_packet=536870912
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: fleet
+      MYSQL_USER: fleet
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?set MYSQL_PASSWORD in .env}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4.11-alpine
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+
+  # Creates or migrates the schema, then exits. Fleet refuses to serve on an unprepared database.
+  fleet-prepare-db:
+    image: fleetdm/fleet:v4.92.1
+    platform: linux/amd64   # Fleet publishes amd64 only; runs under Rosetta on Apple Silicon (OrbStack)
+    command: ["fleet", "prepare", "db", "--no-prompt"]
+    environment: *fleet-env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "no"
+
+  fleet:
+    image: fleetdm/fleet:v4.92.1
+    platform: linux/amd64
+    command: ["fleet", "serve"]
+    environment: *fleet-env
+    ports:
+      - "127.0.0.1:8080:8080"   # workstation-only shortcut; endpoints use the tunnel hostname
+    depends_on:
+      fleet-prepare-db:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    restart: unless-stopped
+
+  # Outbound-only connector; the public hostname and the service URL http://fleet:8080 are set
+  # in the Cloudflare One dashboard, not here.
+  cloudflared:
+    image: cloudflare/cloudflared:2026.9.3
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?set TUNNEL_TOKEN in .env}
+    depends_on:
+      fleet:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  redis-data:
