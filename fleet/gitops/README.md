@@ -7,7 +7,7 @@ uses.
 
 | Path | What it holds |
 |---|---|
-| `default.yml` | Settings for the whole server: organization name, URL, the global enroll secret, labels shared by every fleet |
+| `default.yml` | Settings for the whole server: organization name, URL, the global enroll secret, single sign-on with Google Workspace (metadata by variable), labels shared by every fleet |
 | `fleets/workstations.yml` | The **Workstations** fleet (Fleet's name for a team): the employee baseline of configuration profiles, disk encryption, OS floor, scripts, and policies. The counterpart of the Jamf Now "Employee baseline" blueprint in `mdm/blueprints.md` |
 | `labels/` | Labels, one file each. The `canary` label scopes a change to one host before it goes to all |
 | `platforms/macos/configuration-profiles/` | `.mobileconfig` payloads delivered through MDM |

@@ -15,6 +15,19 @@ org_settings:
     # The global enroll secret: a host enrolling with it lands in Unassigned. The lab's Macs
     # enroll with the Workstations fleet's secret instead. Substituted from fleet/.env.
     - secret: $FLEET_GLOBAL_ENROLL_SECRET
+  # Single sign-on to this console with Google Workspace as the identity provider: a custom SAML
+  # app there, granted to one group, points at /api/v1/fleet/sso/callback with this entity ID.
+  # The identity provider's metadata (its signing certificate and sign-in URL, not a secret but
+  # tenant-specific) comes from fleet/.env, quoted because it is XML. JIT provisioning (Fleet
+  # Premium) creates a Fleet user at first sign-in as a global observer; the one password account
+  # stays as break-glass and is never signed in through SSO (runbooks/sso-app-setup.md).
+  sso_settings:
+    enable_sso: true
+    idp_name: Google Workspace
+    entity_id: https://fleet.tjcollins.dev
+    metadata: '$FLEET_SSO_METADATA'
+    enable_jit_provisioning: true
+    enable_sso_idp_login: false
 
 # Empty means Fleet's defaults for what fleetd collects and how often.
 agent_options:

@@ -1,0 +1,43 @@
+# Single sign-on to the Fleet console with Google Workspace as the identity provider, read back 2026-09-30
+# fleetctl api against https://fleet.tjcollins.dev, the server log, and the SAML app as shown in the Google Admin console. Times are offsets (t+m:ss) from the first sign-in attempt.
+
+## The SAML app in Google Workspace (Apps, Web and mobile apps, Fleet)
+  ACS URL   https://fleet.tjcollins.dev/api/v1/fleet/sso/callback
+  Entity ID https://fleet.tjcollins.dev
+  Name ID   EMAIL, Basic Information > Primary email; no attribute mapping
+  User access: OFF for everyone, ON for one group, engineering
+  Signing certificate: Google_2031-9-26, expires 2031-09-26
+
+## SSO settings on the Fleet server (org_settings.sso_settings, applied from fleet/gitops/default.yml)
+  enable_jit_provisioning	True
+  enable_jit_role_sync	False
+  enable_sso	True
+  enable_sso_idp_login	False
+  entity_id	'https://fleet.tjcollins.dev'
+  idp_image_url	''
+  idp_name	'Google Workspace'
+  issuer_uri	''
+  metadata_url	''
+  sso_server_url	''
+  metadata	2198 characters of identity-provider XML, substituted from a variable outside the repository
+
+## Fleet users (id, name, email, global role, authentication)
+  1	TJ Collins	tj@tjcollins.dev	admin	password	created 2026-09-29
+  2	aengineer@tjcollins.dev	aengineer@tjcollins.dev	observer	SSO	created 2026-09-30
+  User 1 is the break-glass administrator and the fleetctl session; it is never signed in through SSO.
+  User 2 did not exist before t+18:44: created by just-in-time provisioning at the first SSO sign-in, as a global observer.
+
+## What the server answered at the callback, one line per kind of attempt
+  t+0:00	POST /api/v1/fleet/sso/callback	email=tj@tjcollins.dev	err: account_disabled: user not configured to use sso	(the password administrator, auto-selected by a browser already signed in to Google)
+  t+12:09	POST /api/v1/fleet/sso/callback	email=(none)	err: account_invalid: : User with email=aengineer@tjcollins.dev was not found in the datastore	(the test user, authenticated by Google, refused by Fleet: JIT off)
+  t+18:44	POST /api/v1/fleet/sso/callback	email=aengineer@tjcollins.dev	ok	(the same user with JIT on: account created)
+
+## Activity log for the first SSO sign-in (offset, type, actor)
+  t+18:44	created_user	aengineer@tjcollins.dev
+  t+18:44	changed_user_global_role	aengineer@tjcollins.dev	observer
+  t+18:44	user_added_by_sso	aengineer@tjcollins.dev
+  t+18:44	user_logged_in	aengineer@tjcollins.dev
+
+## After the settings were re-applied from the repository (fleetctl gitops, t+41:01)
+  sso_settings read back identical, field by field, to the values set in the UI; the metadata differs only by the newlines removed for the .env file.
+  t+41:47	POST /api/v1/fleet/sso/callback	email=aengineer@tjcollins.dev	ok	(sign-in as the test user after the apply)

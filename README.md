@@ -24,6 +24,14 @@ bash 3.2-compatible and shellcheck-clean.
 > with distinct identities; the Fleet server on the admin workstation behind a Cloudflare Tunnel
 > with Apple MDM on; and the Workstations fleet's baseline as code under `fleet/gitops/`,
 > profiles, disk-encryption and OS-floor controls, policies with a remediation script, and a
-> canary label, applied with `fleetctl gitops` and the fleetd package built (2026-09-30). No Mac
-> is enrolled in Fleet yet. Nothing here claims more than the tree contains at the time of the
+> canary label, applied with `fleetctl gitops` and the fleetd package built (2026-09-30). One
+> macOS VM provisioned from a clean install into Fleet, the baseline delivered and verified, a
+> failing policy repaired by its script (`runbooks/mac-provisioning-fleet.md`, 2026-09-30). The
+> other macOS VM migrated from Jamf Now to Fleet, unenrolled in one console and enrolled through
+> the other's link, its FileVault recovery key escrowed in Fleet and validated on the Mac, the
+> profiles released from the canary label to both, and a policy broken on purpose repaired by
+> its script (`runbooks/mdm-migration-jamf-to-fleet.md`, 2026-09-30). SAML single sign-on from
+> Google Workspace to the Fleet console, access granted to one group, the account created at
+> first sign-in, the settings pinned in `fleet/gitops/` (`runbooks/sso-app-setup.md`,
+> 2026-09-30). Nothing here claims more than the tree contains at the time of the
 > commit you are reading.

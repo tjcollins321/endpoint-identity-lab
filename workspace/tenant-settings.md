@@ -19,7 +19,7 @@ Edition: Business Plus, chosen for advanced endpoint management. Tenant domain: 
 
 | Setting | Value | Why |
 |---|---|---|
-| 2-Step Verification | Enforced at the root. New-user enrollment period one day. Any method except codes by text or voice call. Trusted devices allowed | Enforcement, not just permission, is the control. The shortest enrollment window keeps the unenrolled period small. SMS and voice are excluded because they are the phishable and SIM-swappable methods. |
+| 2-Step Verification | Enforced at the root. New-user enrollment period one day, counted from the user's first sign-in. Any method except codes by text or voice call. Trusted devices allowed | Enforcement, not just permission, is the control. The shortest enrollment window keeps the unenrolled period small. SMS and voice are excluded because they are the phishable and SIM-swappable methods. |
 | Super admin recovery | Allowed; backup codes generated for the sole super admin | With one super admin there is no peer to reset it. A production tenant has at least two super admins, neither used for daily work. |
 | Password policy | Minimum 12 characters, strong-password enforcement on, no expiry, reuse prevention on, enforced at next sign-in | Length over rotation, per current NIST guidance; forced rotation produces predictable variations. Lab choice to revisit: a production tenant puts an identity provider with breached-password screening in front, and the Workspace password becomes a fallback. |
 | Session length | Seven days at the root; twelve hours for `/Contractors` | The first OU override in the tenant. Contractors re-authenticate more often because their OU says so; nothing is configured per user. |
@@ -29,6 +29,7 @@ Edition: Business Plus, chosen for advanced endpoint management. Tenant domain: 
 | Setting | Value | Why |
 |---|---|---|
 | Third-party app access | Unconfigured apps may request basic profile information only; internal domain-owned apps trusted; any app needing more is allow-listed individually under API controls | OAuth consent governance: a user cannot grant a random app access to mail or Drive. Each approved app is a deliberate entry with a record of who allowed it and why. |
+| SAML apps | One custom SAML app, `Fleet` (the Fleet console), ON for the `engineering` group only, OFF for everyone else; Name ID the primary email; no attribute mapping | Access to a third-party app is a group membership, granted and revoked by the lifecycle scripts; the app creates its account at first sign-in. `runbooks/sso-app-setup.md` |
 | Context-Aware Access | Not available on Business Plus | The intended policy is described in `docs/design.md`. Until then, MDM enrollment, enforced 2-Step Verification, and session length are the controls that exist. |
 | Mobile management | Custom: Android Advanced, iOS Basic, Google Sync Unmanaged | One device-level manager per platform. Jamf Now and Fleet own Apple devices, so Google stays at the account layer for iOS (inventory, screen-lock requirement, account wipe, no profile) rather than becoming a second Apple MDM with its own push certificate. Android has no other candidate, so Google would own it. Production posture for personal phones on both platforms is Google Advanced; see `docs/design.md`. |
 

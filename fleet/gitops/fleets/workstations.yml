@@ -18,8 +18,8 @@ agent_options:
 
 controls:
   # Fleet Premium: FileVault enforced, with the recovery key escrowed in Fleet. A host with it off
-  # is asked to log out and turn it on; a host with it already on is asked for the password once
-  # so the key is rotated into escrow.
+  # is asked to log out and turn it on; a host with it already on needs a recovery key in Fleet's
+  # escrow, which runbooks/mdm-migration-jamf-to-fleet.md checks on the Mac after a migration.
   enable_disk_encryption: true
   # Fleet Premium: the OS floor. A host below it is nudged, then forced at the deadline. The floor
   # is the newest release the lab's virtual machines reach (runbooks/macos-vm-lab.md).
@@ -28,11 +28,10 @@ controls:
     deadline: "2026-10-31"
   apple_settings:
     configuration_profiles:
-      # Canary first: every profile is scoped to the canary label until it is proven on that
-      # host; removing the label filter releases it to every host in the fleet.
+      # Proven on the canary host, then released: this entry has no label filter, so every host
+      # in the fleet receives these profiles. A change is staged by giving its profile a separate
+      # entry with `labels_include_any: [canary]` and removing the filter once it verifies there.
       - paths: ../platforms/macos/configuration-profiles/*.mobileconfig
-        labels_include_any:
-          - canary
   scripts:
     - paths: ../platforms/macos/scripts/*.sh
 

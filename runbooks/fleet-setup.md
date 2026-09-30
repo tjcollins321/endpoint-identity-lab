@@ -171,8 +171,9 @@ fleet/gitops/gitops.sh
 ```
 
 Success looks like: `[!] gitops dry run succeeded` followed by `[!] gitops succeeded`, and in the
-UI, with the Workstations fleet selected: Controls, OS settings lists the profiles with custom
-targets (the `canary` label), Disk encryption on, and OS updates at the floor with its deadline;
+UI, with the Workstations fleet selected: Controls, OS settings lists the profiles (at the first
+apply each had a custom target, the `canary` label; since their release they target every host
+in the fleet), Disk encryption on, and OS updates at the floor with its deadline;
 Controls, Scripts lists the remediation script; Controls, Variables lists the Chrome token, stored
 without its `FLEET_SECRET_` prefix; Policies lists the three policies with the automation on the
 Chrome one; Hosts, Labels shows `canary`. A second run is safe: it re-applies the same state, logs the label as

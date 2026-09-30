@@ -26,8 +26,11 @@ and OAuth tokens (so nothing that was authorized keeps working), signs out every
 suspends the account. Deprovisioning comes first because Google refuses the backup-code step on
 an account that is already suspended.
 
-After this the person cannot sign in from anywhere. Mail keeps arriving and is retained, Drive
-and Calendar are untouched, and group memberships remain but grant nothing. Nothing is lost.
+After this the person cannot sign in from anywhere, including through SAML to the Fleet
+console, since Google no longer authenticates them. The console account itself remains, because
+just-in-time provisioning creates and never removes: delete it in Fleet, Settings, Users, so no
+account outlives the person it belonged to. Mail keeps arriving and is retained, Drive and
+Calendar are untouched, and group memberships remain but grant nothing. Nothing is lost.
 
 Success looks like:
 

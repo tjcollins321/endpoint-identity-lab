@@ -1,0 +1,36 @@
+# The first Mac provisioned into Fleet, read back from the server 2026-09-30
+# fleetctl api against https://fleet.tjcollins.dev; the host is a macOS virtual machine (runbooks/macos-vm-lab.md).
+
+## Host
+vm2-fleet.local  serial=Z597CMKJ30  fleet=Workstations  status=online  os=macOS 26.6.2  mdm=On (manual)
+fleetd (orbit) 1.61.0, osquery 5.23.1, scripts_enabled=true
+labels: macOS 14+ (Sonoma+), All Hosts, macOS, canary
+
+## Configuration profiles on the host (name, delivery status)
+  Disk encryption	verifying
+  Turn on full disk access for fleetd	verified
+  Login window	verified
+  Passcode policy	verified
+  Restrictions	verified
+  Google Chrome enrollment	verified
+  Fleetd configuration	verified
+  Fleet root certificate authority (CA)	verified
+
+## Disk encryption: verifying
+
+## Policies (name, result)
+  FileVault enabled	pass
+  Google Chrome installed	pass
+  macOS at or above 26.6.2	pass
+
+## Activity on the host (offsets from its first event)
+  t+7:19	read_host_disk_encryption_key	
+  t+0:37	mdm_enrolled	
+  t+0:00	ran_script	install-google-chrome.sh
+
+## The policy automation: install-google-chrome.sh, run because the Chrome policy failed on the clean Mac
+exit_code=0  runtime=51s
+output:
+Downloading Google Chrome...
+Google Chrome 154.0.8037.93 installed.
+

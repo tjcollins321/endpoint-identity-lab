@@ -57,7 +57,9 @@ workspace/gam/add-to-groups.sh dokafor all-staff engineering
 ```
 
 What it does: adds the account to each group as a member, skipping any it is already in, and
-reads each membership back. Groups carry access (applications, Drive sharing, group-scoped
+reads each membership back. Membership of `engineering` is also the grant for the Fleet console:
+the SAML app is on for that group only, and the console account is created at the first sign-in
+as a read-only observer (`sso-app-setup.md`). Groups carry access (applications, Drive sharing, group-scoped
 settings), so this is where the role's access is granted; the OU carries policy. Owners and
 managers are deliberate console changes, not part of onboarding.
 
@@ -71,8 +73,8 @@ Success looks like:
 ## 3. First sign-in
 
 - The user signs in on the web with the initial password and is made to change it. The tenant
-  enforces 2-Step Verification with a one-day enrollment window and no SMS or voice codes, so
-  the user enrolls an authenticator app or passkey at this sign-in.
+  enforces 2-Step Verification with a one-day enrollment window, counted from this first
+  sign-in, and no SMS or voice codes, so the user enrolls an authenticator app or passkey now.
 - Contractors are signed out after twelve hours by the `/Contractors` session policy; staff
   after seven days.
 - An account created through the API can be placed on hold by Google (`WEB_LOGIN_REQUIRED`).

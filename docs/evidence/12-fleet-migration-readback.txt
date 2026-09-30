@@ -1,0 +1,81 @@
+# A Mac migrated from Jamf Now to Fleet, and the baseline released from the canary label, read back from the server 2026-09-30
+# fleetctl api against https://fleet.tjcollins.dev; both hosts are macOS virtual machines (runbooks/macos-vm-lab.md). Times are offsets (t+m:ss) from the anchor each section names.
+
+## The migrated host
+vm1-jamf.local  serial=ZQGCYXVWFJ  fleet=Workstations  status=online  os=macOS 26.6.2  mdm=On (manual)
+fleetd (orbit) 1.61.0, Fleet Desktop 1.61.0, osquery 5.23.1, scripts_enabled=true
+labels: macOS 14+ (Sonoma+), All Hosts, macOS   (not in canary)
+
+## MDM commands sent to it (offset from the MDM enrollment, type, status, profile)
+  t+0:11	InstallProfile	Acknowledged	Fleetd configuration
+  t+0:13	InstallProfile	Acknowledged	Disk encryption
+  t+0:13	InstallProfile	Acknowledged	Fleet root certificate authority (CA)
+  t+0:15	DeclarativeManagement	Acknowledged
+  t+0:16	InstallEnterpriseApplication	Acknowledged
+  t+20:20	InstallProfile	Acknowledged	Google Chrome enrollment
+  t+20:22	InstallProfile	Acknowledged	Passcode policy
+  t+20:23	InstallProfile	Acknowledged	Login window
+  t+20:25	InstallProfile	Acknowledged	Restrictions
+  t+20:26	InstallProfile	Acknowledged	Turn on full disk access for fleetd
+  The first five follow the enrollment: Fleet's own profiles and the fleetd install by MDM.
+  The last five follow the gitops apply, twenty minutes later, that removed the canary label filter.
+
+## The release: fleet/gitops/gitops.sh after removing `labels_include_any: [canary]` from fleets/workstations.yml
+  apply started (t+0:00 for this section)
+  [!] gitops dry run succeeded
+  [+] applying MDM profiles for fleet Workstations
+  [!] gitops succeeded
+  Profiles in the fleet afterward (name, label filter):
+    Google Chrome enrollment	none
+    Login window	none
+    Passcode policy	none
+    Restrictions	none
+    Turn on full disk access for fleetd	none
+
+## Configuration profiles on vm1-jamf.local (name, delivery status)
+  Disk encryption	verified
+  Turn on full disk access for fleetd	verified
+  Login window	verified
+  Passcode policy	verified
+  Restrictions	verified
+  Google Chrome enrollment	verified
+  Fleetd configuration	verified
+  Fleet root certificate authority (CA)	verified
+## Disk encryption on vm1-jamf.local: verified, recovery key available to an administrator: true
+## Policies on vm1-jamf.local (name, result)
+  FileVault enabled	pass
+  Google Chrome installed	pass
+  macOS at or above 26.6.2	pass
+
+## Configuration profiles on vm2-fleet.local (name, delivery status)
+  Disk encryption	verified
+  Turn on full disk access for fleetd	verified
+  Login window	verified
+  Passcode policy	verified
+  Restrictions	verified
+  Google Chrome enrollment	verified
+  Fleetd configuration	verified
+  Fleet root certificate authority (CA)	verified
+## Disk encryption on vm2-fleet.local: verified, recovery key available to an administrator: true
+## Policies on vm2-fleet.local (name, result)
+  FileVault enabled	pass
+  Google Chrome installed	pass
+  macOS at or above 26.6.2	pass
+
+## Activity on the migrated host (offsets from the MDM enrollment)
+  t+1:00:43	ran_script	install-google-chrome.sh
+  t+47:37	read_host_disk_encryption_key
+  t+13:20	read_host_disk_encryption_key
+  t+4:45	ran_script	install-google-chrome.sh
+  t+4:21	read_host_disk_encryption_key
+  t+0:00	mdm_enrolled
+
+## A policy broken on purpose and repaired by its automation (offsets from the policy failing)
+Google Chrome was deleted on the migrated Mac by hand. At the next policy run the check failed and Fleet queued the script attached to it.
+  t+0:00  policy "Google Chrome installed" = fail
+  t+0:38  install-google-chrome.sh queued by the policy automation
+  t+1:53  script finished: exit_code=0  runtime=59s
+  t+3:21  policy "Google Chrome installed" = pass
+output:
+Downloading Google Chrome...
+Google Chrome 154.0.8037.93 installed.
