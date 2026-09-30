@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadIdentifier</key>
+	<string>dev.tjcollins.lab.passcode</string>
+	<key>PayloadUUID</key>
+	<string>825C5672-0EB7-49DC-9423-CE8863851B43</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+	<key>PayloadDisplayName</key>
+	<string>Passcode policy</string>
+	<key>PayloadDescription</key>
+	<string>Employee baseline: at least 8 characters, no alphanumeric requirement; the screen saver starts after 10 minutes idle and the password is required 1 minute after it starts or the display sleeps; 10 failed attempts lock the account for 15 minutes. Mirrors the Jamf Now Employee baseline in mdm/blueprints.md.</string>
+	<key>PayloadOrganization</key>
+	<string>TJ Collins Lab</string>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadType</key>
+			<string>com.apple.mobiledevice.passwordpolicy</string>
+			<key>PayloadIdentifier</key>
+			<string>dev.tjcollins.lab.passcode.passwordpolicy</string>
+			<key>PayloadUUID</key>
+			<string>CEE34B35-677B-40BF-8F64-C57CD0FFA514</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadDisplayName</key>
+			<string>Passcode policy</string>
+			<key>PayloadOrganization</key>
+			<string>TJ Collins Lab</string>
+			<key>minLength</key>
+			<integer>8</integer>
+			<key>requireAlphanumeric</key>
+			<false/>
+			<key>allowSimple</key>
+			<false/>
+			<key>maxInactivity</key>
+			<integer>10</integer>
+			<key>maxGracePeriod</key>
+			<integer>1</integer>
+			<key>maxFailedAttempts</key>
+			<integer>10</integer>
+			<key>minutesUntilFailedLoginReset</key>
+			<integer>15</integer>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,9 @@
+# Employee baseline check: the disk is encrypted. Fleet's own "Full disk encryption enabled
+# (macOS)" query from its standard query library. Enforcement is the fleet's
+# enable_disk_encryption control; this policy is the independent osquery read-back of it.
+- name: FileVault enabled
+  platform: darwin
+  description: The startup disk is encrypted with FileVault. A lost or stolen Mac that is encrypted holds nothing readable; the recovery key is escrowed in Fleet.
+  resolution: Fleet enforces FileVault on this fleet. Log out and back in when Fleet Desktop asks, and FileVault turns on; if it was already on, enter your password once so the recovery key can be escrowed.
+  query: SELECT 1 FROM disk_encryption WHERE filevault_status = 'on' LIMIT 1;
+  critical: true

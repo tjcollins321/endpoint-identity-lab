@@ -1,0 +1,8 @@
+# The one host that receives a change first. A profile scoped to this label is proven here before
+# the label filter is removed and the profile reaches every host in the fleet. Membership is by
+# hardware serial, so it lives in code and survives a re-enrollment of the machine.
+- name: canary
+  description: Receives every change first; the label filter is removed once the change is proven here.
+  query: SELECT 1 FROM system_info WHERE hardware_serial = 'Z597CMKJ30';
+  label_membership_type: dynamic
+  platform: darwin

@@ -1,0 +1,31 @@
+# Settings for the whole Fleet server, applied by `fleetctl gitops` (README.md here says what
+# each file holds; runbooks/fleet-setup.md says how to run it). A setting a section could hold
+# and does not is reset to Fleet's default on apply, so this file is the complete statement of
+# the server's settings, not a diff. What applies to the managed Macs (profiles, policies,
+# scripts) lives in fleets/.
+
+org_settings:
+  org_info:
+    org_name: TJ Collins Lab
+  server_settings:
+    # Embedded in every enrollment profile and fleetd package; changing it means re-enrolling.
+    server_url: https://fleet.tjcollins.dev
+    enable_analytics: true
+  secrets:
+    # The global enroll secret: a host enrolling with it lands in Unassigned. The lab's Macs
+    # enroll with the Workstations fleet's secret instead. Substituted from fleet/.env.
+    - secret: $FLEET_GLOBAL_ENROLL_SECRET
+
+# Empty means Fleet's defaults for what fleetd collects and how often.
+agent_options:
+
+# Controls here would apply to Unassigned hosts, of which the lab keeps none.
+controls:
+
+# Policies and reports here would run on every host; the lab's live in the fleet file.
+policies:
+reports:
+
+# Labels shared by every fleet, one file each; an empty folder is a warning, not an error.
+labels:
+  - paths: ./labels/*.yml

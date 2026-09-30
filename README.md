@@ -19,5 +19,11 @@ bash 3.2-compatible and shellcheck-clean.
 > organizational units, groups, enforced 2-Step Verification, and session policy
 > (`workspace/tenant-settings.md`); GAM on the admin workstation and the five lifecycle scripts in
 > `workspace/gam/`, run end to end (2026-09-28; transcripts in `docs/evidence/`); the Workspace
-> sections of the onboarding and offboarding runbooks. No MDM or device is enrolled yet. Nothing
-> here claims more than the tree contains at the time of the commit you are reading.
+> sections of the onboarding and offboarding runbooks; the iPad, the MacBook, and one macOS VM
+> enrolled in Jamf Now on two blueprints (`mdm/blueprints.md`, 2026-09-29); two macOS VMs built
+> with distinct identities; the Fleet server on the admin workstation behind a Cloudflare Tunnel
+> with Apple MDM on; and the Workstations fleet's baseline as code under `fleet/gitops/`,
+> profiles, disk-encryption and OS-floor controls, policies with a remediation script, and a
+> canary label, applied with `fleetctl gitops` and the fleetd package built (2026-09-30). No Mac
+> is enrolled in Fleet yet. Nothing here claims more than the tree contains at the time of the
+> commit you are reading.

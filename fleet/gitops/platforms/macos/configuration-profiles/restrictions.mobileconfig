@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadIdentifier</key>
+	<string>dev.tjcollins.lab.restrictions</string>
+	<key>PayloadUUID</key>
+	<string>E10A3FB2-E8B4-49DC-A0D2-BFEEE323B98E</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+	<key>PayloadDisplayName</key>
+	<string>Restrictions</string>
+	<key>PayloadDescription</key>
+	<string>Employee baseline: company documents stay off a personal iCloud account (iCloud Desktop and Documents off). Mirrors the Jamf Now Employee baseline in mdm/blueprints.md.</string>
+	<key>PayloadOrganization</key>
+	<string>TJ Collins Lab</string>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadType</key>
+			<string>com.apple.applicationaccess</string>
+			<key>PayloadIdentifier</key>
+			<string>dev.tjcollins.lab.restrictions.applicationaccess</string>
+			<key>PayloadUUID</key>
+			<string>3E2C4406-A5C3-4CE9-9047-220B33949826</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadDisplayName</key>
+			<string>Restrictions</string>
+			<key>PayloadOrganization</key>
+			<string>TJ Collins Lab</string>
+			<key>allowCloudDesktopAndDocuments</key>
+			<false/>
+		</dict>
+	</array>
+</dict>
+</plist>

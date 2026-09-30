@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadIdentifier</key>
+	<string>dev.tjcollins.lab.login-window</string>
+	<key>PayloadUUID</key>
+	<string>05D7F10B-0193-4A78-8B12-C3D0A4B677B1</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+	<key>PayloadDisplayName</key>
+	<string>Login window</string>
+	<key>PayloadDescription</key>
+	<string>Employee baseline: the guest account is off and automatic login is off, so every session is an identified user with a password.</string>
+	<key>PayloadOrganization</key>
+	<string>TJ Collins Lab</string>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadType</key>
+			<string>com.apple.MCX</string>
+			<key>PayloadIdentifier</key>
+			<string>dev.tjcollins.lab.login-window.guest</string>
+			<key>PayloadUUID</key>
+			<string>1E38E0B2-60F5-4843-8D71-BDB55A6524F3</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadDisplayName</key>
+			<string>Login window</string>
+			<key>PayloadOrganization</key>
+			<string>TJ Collins Lab</string>
+			<key>DisableGuestAccount</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>PayloadType</key>
+			<string>com.apple.loginwindow</string>
+			<key>PayloadIdentifier</key>
+			<string>dev.tjcollins.lab.login-window.autologin</string>
+			<key>PayloadUUID</key>
+			<string>668AD8FF-9766-4A60-A9A4-D93CE97FBD10</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadDisplayName</key>
+			<string>Login window</string>
+			<key>PayloadOrganization</key>
+			<string>TJ Collins Lab</string>
+			<key>com.apple.login.mcx.DisableAutoLoginClient</key>
+			<true/>
+		</dict>
+	</array>
+</dict>
+</plist>

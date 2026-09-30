@@ -1,0 +1,42 @@
+# The Workstations fleet (Fleet's name for a team): the employee baseline, the counterpart of the
+# Jamf Now "Employee baseline" blueprint in mdm/blueprints.md. Every managed Mac other than the
+# admin workstation enrolls here; the enroll secret in its fleetd package decides that. Fleets are
+# Fleet Premium; on Fleet Free, `controls` and `policies` move into default.yml and apply to every
+# host. Paths are relative to this file. A section left empty is reset to Fleet's default, and a
+# folder with no matching files is a warning, not an error, so a new profile, script, or policy
+# is a file added under platforms/macos/, with no change here.
+
+name: Workstations
+
+settings:
+  secrets:
+    # Substituted from fleet/.env by fleetctl gitops; never a literal here.
+    - secret: $FLEET_WORKSTATIONS_ENROLL_SECRET
+
+# Empty means the server's agent options.
+agent_options:
+
+controls:
+  # Fleet Premium: FileVault enforced, with the recovery key escrowed in Fleet. A host with it off
+  # is asked to log out and turn it on; a host with it already on is asked for the password once
+  # so the key is rotated into escrow.
+  enable_disk_encryption: true
+  # Fleet Premium: the OS floor. A host below it is nudged, then forced at the deadline. The floor
+  # is the newest release the lab's virtual machines reach (runbooks/macos-vm-lab.md).
+  macos_updates:
+    minimum_version: "26.6.2"
+    deadline: "2026-10-31"
+  apple_settings:
+    configuration_profiles:
+      # Canary first: every profile is scoped to the canary label until it is proven on that
+      # host; removing the label filter releases it to every host in the fleet.
+      - paths: ../platforms/macos/configuration-profiles/*.mobileconfig
+        labels_include_any:
+          - canary
+  scripts:
+    - paths: ../platforms/macos/scripts/*.sh
+
+# osquery checks, one file per policy, with a remediation script attached where one exists.
+policies:
+  - paths: ../platforms/macos/policies/*.yml
+reports:

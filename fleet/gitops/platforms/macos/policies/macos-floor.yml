@@ -1,0 +1,9 @@
+# Employee baseline check: macOS is at or above the floor. Compared as integers, since a string
+# comparison would put 26.10 below 26.6. Enforcement is the fleet's macos_updates control; this
+# policy is the read-back. The floor is the newest release the lab's virtual machines reach.
+- name: macOS at or above 26.6.2
+  platform: darwin
+  description: The Mac runs macOS 26.6.2 or later, the lab's floor, so it has the security content of that release.
+  resolution: Update macOS from System Settings, General, Software Update. Fleet nudges a host below the floor and forces the update at the deadline.
+  query: SELECT 1 FROM os_version WHERE major > 26 OR (major = 26 AND minor > 6) OR (major = 26 AND minor = 6 AND patch >= 2);
+  critical: false

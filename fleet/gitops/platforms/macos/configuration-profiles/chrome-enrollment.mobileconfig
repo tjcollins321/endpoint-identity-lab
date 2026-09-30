@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadIdentifier</key>
+	<string>dev.tjcollins.lab.chrome-enrollment</string>
+	<key>PayloadUUID</key>
+	<string>ECE5AB6B-1059-4EFF-9D3D-F74699D1DBD6</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+	<key>PayloadDisplayName</key>
+	<string>Google Chrome enrollment</string>
+	<key>PayloadDescription</key>
+	<string>Enrolls the Mac's Chrome browser in Chrome Enterprise Core, so it receives the Workspace tenant's browser policy for its organizational unit and reports browser status to the Admin console. The token is a Fleet custom variable, never a literal in the repository.</string>
+	<key>PayloadOrganization</key>
+	<string>TJ Collins Lab</string>
+	<key>PayloadScope</key>
+	<string>System</string>
+	<key>PayloadRemovalDisallowed</key>
+	<true/>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>PayloadType</key>
+			<string>com.google.Chrome</string>
+			<key>PayloadIdentifier</key>
+			<string>dev.tjcollins.lab.chrome-enrollment.chrome</string>
+			<key>PayloadUUID</key>
+			<string>A792322A-FBDF-4177-B2AF-381CB1BCD928</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+			<key>PayloadDisplayName</key>
+			<string>Google Chrome enrollment</string>
+			<key>PayloadOrganization</key>
+			<string>TJ Collins Lab</string>
+			<key>CloudManagementEnrollmentToken</key>
+			<string>$FLEET_SECRET_CHROME_ENROLLMENT_TOKEN</string>
+			<key>CloudReportingEnabled</key>
+			<true/>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -1,0 +1,68 @@
+# Fleet configuration as code: the first apply, its idempotent re-run, and the server read back
+# Captured 2026-09-30 on the admin workstation. fleetctl 4.92.1 against Fleet 4.92.1 at https://fleet.tjcollins.dev.
+
+## 1. First apply (fleet/gitops/gitops.sh: dry run, then apply), 2026-09-30
+
+[!] gitops dry run succeeded
+[+] applying 1 label (1 new and 0 updated)
+[+] applied fleet config
+[+] applied MDM profiles
+[+] applied enroll secrets
+[+] applying 0 labels (0 new and 0 updated)
+[+] applying MDM profiles for fleet Workstations
+[+] applied 1 script for fleet Workstations
+[+] applied 1 fleet
+[+] applying 3 policies
+[+] applied 3 policies
+[!] gitops succeeded
+
+## 2. Second run with unchanged files (captured live): the same state re-applied, nothing changes in effect
+
+[+] would've updated 1 label
+[+] would've applied DDM assets for fleet Workstations
+[+] would've applied MDM profiles for new fleet Workstations
+[+] would've applied 1 script for fleet Workstations
+[+] would've applied 0 software packages for fleet Workstations
+[+] would've applied 0 app store apps for fleet Workstations
+[+] would've applied 1 fleet
+[+] would've applied 3 policies
+[!] gitops dry run succeeded
+[+] applying 1 label (0 new and 1 updated)
+[+] applying 0 labels (0 new and 0 updated)
+[+] applying DDM assets for fleet Workstations
+[+] applying MDM profiles for fleet Workstations
+[+] applied 1 script for fleet Workstations
+[+] applying 0 software packages for fleet Workstations
+[+] applied 0 software packages for fleet Workstations
+[+] applying 0 app store apps for fleet Workstations
+[+] applied 1 fleet
+[+] applying 3 policies
+[+] applied 3 policies
+[!] gitops succeeded
+
+## 3. Read back through the API
+
+### Fleet
+Workstations: hosts=0 enable_disk_encryption=true macos_updates=26.6.2 by 2026-10-31
+
+### Label
+canary (dynamic, darwin): SELECT 1 FROM system_info WHERE hardware_serial = 'Z597CMKJ30';
+
+### Configuration profiles, fleet Workstations
+Google Chrome enrollment  [dev.tjcollins.lab.chrome-enrollment]  labels_include_any=canary
+Login window  [dev.tjcollins.lab.login-window]  labels_include_any=canary
+Passcode policy  [dev.tjcollins.lab.passcode]  labels_include_any=canary
+Restrictions  [dev.tjcollins.lab.restrictions]  labels_include_any=canary
+Turn on full disk access for fleetd  [com.github.erikberglund.ProfileCreator.2C1ED825-A0C3-4274-B0AD-40B80FCA4F71]  labels_include_any=canary
+
+### Scripts, fleet Workstations
+install-google-chrome.sh
+
+### Policies, fleet Workstations
+FileVault enabled  critical=true  automation=none
+Google Chrome installed  critical=false  automation=install-google-chrome.sh
+macOS at or above 26.6.2  critical=false  automation=none
+
+### Enroll secrets (counts only) and custom variables (names only)
+global: 1  fleet Workstations: 1
+CHROME_ENROLLMENT_TOKEN

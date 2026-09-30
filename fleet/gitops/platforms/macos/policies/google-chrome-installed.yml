@@ -1,0 +1,11 @@
+# Employee baseline check: the required browser is present. Chrome is the required app because
+# the Chrome enrollment profile does nothing without it. The attached script installs or repairs
+# it on a failing host (a Fleet Premium policy automation; the same script runs by hand on Free).
+- name: Google Chrome installed
+  platform: darwin
+  description: Google Chrome is installed in /Applications. It is the browser the Chrome enrollment profile manages, so its absence means the Workspace tenant's browser policy reaches nothing.
+  resolution: Fleet runs the install script on this host automatically. To install by hand, run platforms/macos/scripts/install-google-chrome.sh as an administrator.
+  query: SELECT 1 FROM apps WHERE bundle_identifier = 'com.google.Chrome' AND path = '/Applications/Google Chrome.app';
+  critical: false
+  run_script:
+    path: ../scripts/install-google-chrome.sh

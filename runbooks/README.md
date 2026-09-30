@@ -14,4 +14,4 @@ end). Platform settings live in `workspace/tenant-settings.md`, `mdm/blueprints.
 | iPadOS enrollment into Jamf Now (Open Enrollment) | [ipados-enrollment-jamf.md](ipados-enrollment-jamf.md) | written |
 | macOS enrollment into Jamf Now (user-approved MDM) | [mac-enrollment-jamf.md](mac-enrollment-jamf.md) | written; both paths exercised, the MacBook from the console and a VM by Open Enrollment |
 | macOS lab VMs in UTM with distinct device identities | [macos-vm-lab.md](macos-vm-lab.md) | written |
-| Fleet server: Compose stack behind a Cloudflare Tunnel, Apple MDM on | [fleet-setup.md](fleet-setup.md) | written; GitOps and enrollment follow in mac-provisioning-fleet.md |
+| Fleet server: Compose stack behind a Cloudflare Tunnel, Apple MDM on, configuration as code applied, fleetd package built | [fleet-setup.md](fleet-setup.md) | written; mac-provisioning-fleet.md and mdm-migration-jamf-to-fleet.md follow as the first Macs go in |
