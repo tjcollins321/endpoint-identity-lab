@@ -1,0 +1,8 @@
+# A role label: declared here so that it exists and can scope software and profiles, with no `hosts:`
+# key on purpose. Fleet keeps a manual label's membership when `hosts:` is omitted and empties it
+# when the key is present, even as an empty list, so which Macs carry this label is set by the
+# lifecycle scripts through the API (lifecycle/README.md) and never by this file. Renaming the label
+# here deletes and re-creates it, which clears its membership; the name is fixed once a Mac holds it.
+- name: role-engineer
+  description: Macs issued to engineers. VS Code arrives by this label. Membership is set by lifecycle/onboard.sh through the API.
+  label_membership_type: manual

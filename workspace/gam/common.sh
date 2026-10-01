@@ -83,6 +83,40 @@ user_suspended() {
   [ $? -eq 26 ]
 }
 
+# Username from the convention: first initial plus last name, lowercase, letters and digits only;
+# on a collision with a different person, a digit suffix (2, 3, ...). Prints "address<TAB>exists"
+# when the address already belongs to this person (same first and last name), "address<TAB>free"
+# when it is unused; notes about taken candidates go to stderr. Returns 1 when no name is usable
+# or no suffix is free. Used by create-user.sh and by lifecycle/onboard.sh.
+resolve_username() {
+  local first="$1" last="$2" domain initial surname base tab n candidate names have_first have_last
+  domain=$(lab_domain)
+  [ -n "$domain" ] || return 1
+  initial=$(printf '%s' "$first" | cut -c1 | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9')
+  surname=$(printf '%s' "$last" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9')
+  base="$initial$surname"
+  [ -n "$base" ] || return 1
+  tab=$(printf '\t')
+  n=1
+  while [ "$n" -le 9 ]; do
+    if [ "$n" -eq 1 ]; then candidate="$base@$domain"; else candidate="$base$n@$domain"; fi
+    names=$(user_names "$candidate")
+    if [ -z "$names" ]; then
+      printf '%s\tfree\n' "$candidate"
+      return 0
+    fi
+    have_first=${names%%"$tab"*}
+    have_last=${names#*"$tab"}
+    if [ "$have_first" = "$first" ] && [ "$have_last" = "$last" ]; then
+      printf '%s\texists\n' "$candidate"
+      return 0
+    fi
+    log "taken: $candidate belongs to $have_first $have_last; trying the next suffix" >&2
+    n=$((n + 1))
+  done
+  return 1
+}
+
 # 0 if a completed Drive transfer from $1 to $2 (or to anyone, when $2 is empty) exists.
 drive_transferred() {
   if [ -n "${2:-}" ]; then

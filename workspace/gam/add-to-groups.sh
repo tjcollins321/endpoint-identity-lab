@@ -40,9 +40,15 @@ for g in "$@"; do
   fi
 done
 
+# A new membership can take a few seconds to read back, so the verify retries briefly.
 log "verify:"
 for g in "$@"; do
   group=$(qualify "$g")
+  tries=0
+  while ! is_member "$group" "$user" && [ "$tries" -lt 6 ]; do
+    tries=$((tries + 1))
+    sleep 3
+  done
   if is_member "$group" "$user"; then
     echo "  $user is a member of $group"
   else

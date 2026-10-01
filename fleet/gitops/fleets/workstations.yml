@@ -35,7 +35,24 @@ controls:
   scripts:
     - paths: ../platforms/macos/scripts/*.sh
 
-# osquery checks, one file per policy, with a remediation script attached where one exists.
+# Software Fleet can install on the fleet's Macs, as Fleet-maintained apps (Fleet Premium; on Fleet
+# Free the install is a script attached to a policy, the google-chrome-installed.yml pattern). An
+# entry here makes the app available; the install happens when its policy below fails. Slack is the
+# baseline for every Mac. VS Code and Zoom are role software: scoped to a role label declared in
+# ../labels/, whose membership the lifecycle scripts set through the API, so a Mac gets the apps of
+# the role it is issued to and loses nothing when it changes hands (lifecycle/README.md).
+software:
+  fleet_maintained_apps:
+    - slug: slack/darwin
+    - slug: visual-studio-code/darwin
+      labels_include_any:
+        - role-engineer
+    - slug: zoom/darwin
+      labels_include_any:
+        - role-marketing
+
+# osquery checks, one file per policy, with a remediation script or a software install attached
+# where one exists; the two role policies carry their own label filter.
 policies:
   - paths: ../platforms/macos/policies/*.yml
 reports:

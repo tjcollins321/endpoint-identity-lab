@@ -1,0 +1,10 @@
+# Every managed Mac has Slack. The policy fails on a Mac without it and the automation installs the
+# Fleet-maintained app declared under `software` in fleets/workstations.yml (Fleet Premium; on Fleet
+# Free the pattern is a script attached to the policy, as google-chrome-installed.yml shows).
+- name: Slack installed
+  platform: darwin
+  description: Slack is installed, as the baseline for every managed Mac expects.
+  resolution: Fleet installs Slack when this policy fails; nothing to do by hand.
+  query: SELECT 1 FROM apps WHERE bundle_identifier = 'com.tinyspeck.slackmacgap';
+  install_software:
+    fleet_maintained_app_slug: slack/darwin

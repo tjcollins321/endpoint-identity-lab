@@ -109,3 +109,8 @@ verified within a minute of it. Fleet also installs three profiles of its own ne
 baseline, `Fleetd configuration`, `Fleet root certificate authority (CA)`, and `Disk encryption`;
 they are Fleet's, not the repository's, and they belong there. `Disk encryption` read Verifying
 for 54 minutes after the key arrived, until the server's hourly check of stored keys had run.
+- **The browser enrolls at first launch, not at install.** The Chrome enrollment profile only
+  delivers the token; Chrome reads it and enrolls with Chrome Enterprise Core the first time it
+  starts. A Mac whose Chrome was installed by the policy script and never opened is fully
+  provisioned in Fleet and absent from Devices, Chrome, Managed browsers until someone launches
+  Chrome once. Found 2026-10-01 on the second VM; the first had been opened during its migration.

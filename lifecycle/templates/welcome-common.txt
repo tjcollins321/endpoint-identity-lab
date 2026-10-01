@@ -1,0 +1,23 @@
+Hi {First},
+
+Welcome to TJ Collins Lab. You start on {StartDate} as {RoleArticle} {Role}, and {Manager} is your manager. This note covers what to do before and on your first day. The password for your new account arrives in a separate message.
+
+1. Your account
+
+Your work address is {Username}. Sign in at https://workspace.google.com with the password from the other message; you will be asked to choose a new one (12 characters or more). Within one day of that first sign-in you must set up 2-Step Verification: an authenticator app or a passkey, since codes by text message or phone call are not allowed. Until then you may be asked for an extra verification step. Help: docs/kb/first-day-setup.md.
+
+2. Your work device
+
+{DeviceSection}
+
+3. Your personal phone (optional)
+
+You can add your work account to your own phone to get mail and calendar. Add the Google account in the phone's settings. On an iPhone or iPad you will be asked to install the Google Device Policy app; on Android a separate work profile is created for work apps. An administrator approves the device the first time. The company can see the device model and require a screen lock, and when you leave it removes the work account and its data; it cannot see your personal apps, photos, or messages. Help: docs/kb/personal-phone-work-account.md.
+
+4. Where to get help
+
+The help articles are in the lab's docs/kb folder. For anything else, reply to this message or ask {Manager}.
+
+See you on {StartDate}.
+
+IT, TJ Collins Lab

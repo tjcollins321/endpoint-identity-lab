@@ -8,8 +8,9 @@ end). Platform settings live in `workspace/tenant-settings.md`, `mdm/blueprints.
 
 | Procedure | Runbook | State |
 |---|---|---|
-| Onboarding: account, access, first sign-in, devices | [onboarding.md](onboarding.md) | Workspace sections written; device sections follow the MDM work |
-| Offboarding: cut access, transfer data, devices, delete | [offboarding.md](offboarding.md) | Workspace sections written; device sections follow the MDM work |
+| Onboarding by role: account, attributes, access, welcome kit, the Mac or Chromebook assigned, first sign-in | [onboarding.md](onboarding.md) | rewritten around `lifecycle/onboard.sh`; run for an engineer with a Mac and a contractor (2026-10-01), the rest by batch |
+| Offboarding: access cut first, Drive and Calendar transferred, groups removed, the leavers' OU, work account wiped from personal devices, Mac locked or Chromebook disabled, console account deleted, deletion queued | [offboarding.md](offboarding.md) | rewritten around `lifecycle/offboard.sh`; run for a contractor (2026-10-01) |
+| Role change (transfer, reorg, rehire): OU, groups, attributes, and the device's role label converged to the new role, one-off grants kept | [role-change.md](role-change.md) | written; run as a round trip on the engineer (2026-10-01) |
 | GAM on the admin workstation | [gam-setup.md](gam-setup.md) | written |
 | iPadOS enrollment into Jamf Now (Open Enrollment) | [ipados-enrollment-jamf.md](ipados-enrollment-jamf.md) | written |
 | macOS enrollment into Jamf Now (user-approved MDM) | [mac-enrollment-jamf.md](mac-enrollment-jamf.md) | written; both paths exercised, the MacBook from the console and a VM by Open Enrollment |

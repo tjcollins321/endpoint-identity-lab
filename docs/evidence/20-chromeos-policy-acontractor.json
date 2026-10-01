@@ -1,0 +1,685 @@
+{
+  "chromeMetadata": {
+    "application": "Google Chrome",
+    "platform": "16805.31.0 (Official Build) stable-channel reven",
+    "revision": "328347614e9a8fe00c1a8a8345c6e731142cc7fc-refs/branch-heads/8037@{#1599}",
+    "version": "154.0.8037.96 (Official Build) (64-bit)"
+  },
+  "policyGroups": {
+    "chrome": {
+      "name": "Chrome Policies",
+      "policies": {
+        "AllowDinosaurEasterEgg": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "AllowKioskAppControlChromeVersion": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "AllowedDomainsForApps": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": "tjcollins.dev,gserviceaccount.com"
+        },
+        "AllowedLocalAuthFactors": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": []
+        },
+        "ArcBackupRestoreServiceEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": 0
+        },
+        "ArcEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": true
+        },
+        "ArcGoogleLocationServicesEnabled": {
+          "deprecated": true,
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": 0
+        },
+        "ArcPolicy": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": "{\"applications\":[],\"playStoreMode\":\"BLACKLIST\"}"
+        },
+        "CaptivePortalAuthenticationIgnoresProxy": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "CastReceiverEnabled": {
+          "future": true,
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ChromeDataRegionSetting": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": 0
+        },
+        "ChromeOsLockOnIdleSuspend": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": true
+        },
+        "ChromeOsMultiProfileUserBehavior": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": "primary-only"
+        },
+        "ChromeOsReleaseChannel": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": "stable-channel"
+        },
+        "ChromeOsReleaseChannelDelegated": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "ClassManagementEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": "disabled"
+        },
+        "DeviceActivityHeartbeatEnabled": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "DeviceAllowNewUsers": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "DeviceBlockDevmode": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "DeviceGuestModeEnabled": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "DeviceLoginScreenGeolocationAccessLevel": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "sourceEnterpriseDefault",
+          "value": 1
+        },
+        "DevicePowerwashAllowed": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "DeviceReportNetworkEvents": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "DeviceReportRuntimeCounters": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "DeviceSystemWideTracingEnabled": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "DeviceUnaffiliatedCrostiniAllowed": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "DeviceUserAllowlist": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": "********"
+        },
+        "DeviceWiFiFastTransitionEnabled": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "DnsOverHttpsMode": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": "off"
+        },
+        "DownloadRestrictions": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": 3
+        },
+        "EasyUnlockAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "EmojiPickerGifSupportEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "EmojiSuggestionEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ExternalStorageDisabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": true
+        },
+        "FastPairEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "FocusModeSoundsEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": "disabled"
+        },
+        "GenAiDefaultSettings": {
+          "info": "This policy is controlling the default behavior of the following policies: HelpMeWriteSettings, CreateThemesSettings, DevToolsGenAiSettings, HistorySearchSettings, TabCompareSettings, AutomatedPasswordChangeSettings, AutofillPredictionSettings, GenAIWallpaperSettings, GenAIVcBackgroundSettings, HelpMeReadSettings, HelpMeWriteSettings, GenAIPhotoEditingSettings, GenAISmartGroupingSettings, GenAiChromeOsSmartActionsSettings, GenAIInlineImageSettings, LensOverlaySettings, AIModeSettings, ThirdPartyAiChatSettings, GeminiSettings, VoiceTypingSettings, Indigo, SearchContentSharingSettings, FindAndFillWithGeminiSettings",
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": 1
+        },
+        "GoogleWorkspaceCloudUpload": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": "disallowed"
+        },
+        "HeartbeatEnabled": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "IncognitoModeAvailability": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": 1
+        },
+        "InstantTetheringAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": true
+        },
+        "KioskCRXManifestUpdateURLIgnored": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "LidCloseAction": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": 0
+        },
+        "LoginDisplayPasswordButtonEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "MicrosoftOfficeCloudUpload": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": "disallowed"
+        },
+        "MicrosoftOneDriveAccountRestrictions": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": [
+            "organizations"
+          ]
+        },
+        "MicrosoftOneDriveMount": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": "disallowed"
+        },
+        "NTLMShareAuthenticationEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "NTPCustomBackgroundEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": true
+        },
+        "NearbyShareAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "NetBiosShareDiscoveryEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "OrcaEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "OsColorMode": {
+          "level": "recommended",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": "light"
+        },
+        "PasswordManagerEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": false
+        },
+        "PhoneHubAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "PinUnlockAutosubmitEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "PowerManagementIdleSettings": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": {
+            "AC": {
+              "Delays": {
+                "Idle": 600001
+              },
+              "IdleAction": "Suspend"
+            },
+            "Battery": {
+              "Delays": {
+                "Idle": 600001
+              },
+              "IdleAction": "Suspend"
+            }
+          }
+        },
+        "QuickOfficeForceFileDownloadEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "QuickUnlockModeAllowlist": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": []
+        },
+        "RecoveryFactorBehavior": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ReportCRDSessions": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceActivityTimes": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceAudioStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceAudioStatusCheckingRateMs": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": 900000
+        },
+        "ReportDeviceBacklightInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceBluetoothInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceBoardStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceBootMode": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceCpuInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceCrashReportInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceFanInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "ReportDeviceGraphicsStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceLoginLogout": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceMemoryInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceNetworkConfiguration": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceNetworkStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceNetworkTelemetryCollectionRateMs": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": 900000
+        },
+        "ReportDeviceOsUpdateStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDevicePeripherals": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDevicePowerStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": false
+        },
+        "ReportDeviceSecurityStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceStorageStatus": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceSystemInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceTimezoneInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceVersionInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "ReportDeviceVpdInfo": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        },
+        "SafeBrowsingProtectionLevel": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": 1
+        },
+        "SafeBrowsingProxiedRealTimeChecksAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": true
+        },
+        "SecondaryGoogleAccountSigninAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": true
+        },
+        "ShowAiIntroScreenEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ShowCastSessionsStartedByOtherDevices": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ShowDisplaySizeScreenEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ShowFullUrlsInAddressBar": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ShowGeminiIntroScreenEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ShowHumanPresenceSensorScreenEnabled": {
+          "future": true,
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "ShowTouchpadScrollScreenEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "SmsMessagesAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": true
+        },
+        "SuggestedContentEnabled": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "SystemTerminalSshAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "UnaffiliatedDeviceArcAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "cloud",
+          "value": false
+        },
+        "UserBorealisAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        },
+        "WifiSyncAndroidAllowed": {
+          "level": "mandatory",
+          "scope": "user",
+          "source": "sourceEnterpriseDefault",
+          "value": false
+        }
+      }
+    },
+    "extensions": {
+      "ghbmnnjooekpmoecnnnilnnbdlolhkhi": {
+        "forSigninScreen": false,
+        "id": "ghbmnnjooekpmoecnnnilnnbdlolhkhi",
+        "isExtension": true,
+        "name": "Google Docs Offline",
+        "policies": {}
+      }
+    }
+  },
+  "status": {
+    "device": {
+      "assetId": "",
+      "clientId": "9bcd6245-3003-4edc-a185-96b2110e7c36",
+      "directoryApiId": "31ab66b5-af3d-4736-97ca-434ff68e2f6c",
+      "enterpriseDomainManager": "tjcollins.dev",
+      "error": false,
+      "gaiaId": "105250506097979753968",
+      "isOffHoursActive": false,
+      "location": "",
+      "policiesPushAvailable": true,
+      "policyDescriptionKey": "statusDevice",
+      "status": "Policy cache OK",
+      "username": "tj@tjcollins.dev"
+    },
+    "user": {
+      "clientId": "b6dfa485-d0a7-4257-8a04-25ae9a9a93a2",
+      "domain": "tjcollins.dev",
+      "enterpriseDomainManager": "tjcollins.dev",
+      "error": false,
+      "flexOrgWarning": false,
+      "gaiaId": "117414680562230326321",
+      "isAffiliated": true,
+      "policiesPushAvailable": true,
+      "policyDescriptionKey": "statusUser",
+      "profileId": "M1DyKMJKy5ihL36w2Fw6TW4osUU",
+      "status": "Policy cache OK",
+      "username": "acontractor@tjcollins.dev"
+    }
+  }
+}

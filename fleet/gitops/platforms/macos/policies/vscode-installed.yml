@@ -1,0 +1,12 @@
+# Role software: the policy and its install automation apply only to Macs in the role-engineer label,
+# so an engineer's Mac gets VS Code and a marketing Mac is never asked about it. The label is declared
+# in labels/role-engineer.yml; which Macs are in it is set by lifecycle/onboard.sh through the API.
+- name: Visual Studio Code installed (engineers)
+  platform: darwin
+  description: VS Code is installed on every Mac issued to an engineer.
+  resolution: Fleet installs VS Code when this policy fails on an engineer's Mac; nothing to do by hand.
+  query: SELECT 1 FROM apps WHERE bundle_identifier = 'com.microsoft.VSCode';
+  labels_include_any:
+    - role-engineer
+  install_software:
+    fleet_maintained_app_slug: visual-studio-code/darwin

@@ -1,0 +1,45 @@
+# lifecycle/change-role.sh jmbeki engineer, then jmbeki marketing, 2026-10-01: the Marketing hire moved to the Engineer role and back. Groups swapped, title and department updated, the Mac's role label moved by API with no GitOps apply, one-off grants would be kept and reported. Offsets from the start of the first run.
+
+t+0:00  == role change for jmbeki@tjcollins.dev: marketing (department Marketing) -> Engineer (OU /Staff, groups: all-staff engineering, device: mac)
+t+0:02  ok: in /Staff
+t+0:04  ok: member of all-staff@tjcollins.dev (in the Engineer role)
+Group: marketing@tjcollins.dev, Remove 1 Member
+  Group: marketing@tjcollins.dev, Member: jmbeki@tjcollins.dev, Removed: Role: MEMBER
+t+0:06  changed: removed from marketing@tjcollins.dev
+Group: engineering@tjcollins.dev, Add 1 Member
+  Group: engineering@tjcollins.dev, Member: jmbeki@tjcollins.dev, Added: Role: MEMBER
+t+0:07  changed: added to engineering@tjcollins.dev
+User: jmbeki@tjcollins.dev, Updated
+t+0:12  changed: title Software Engineer, department Engineering
+t+0:14  changed: vm2-fleet.local removed from role-marketing
+t+0:15  changed: vm2-fleet.local added to role-engineer
+t+0:15  == verify jmbeki@tjcollins.dev
+t+0:15    OU: /Staff (role: /Staff)
+t+0:18    title: Software Engineer; department: Engineering; manager: aengineer@tjcollins.dev
+t+0:20    group all-staff@tjcollins.dev: member
+t+0:22    group engineering@tjcollins.dev: member
+t+0:25    Fleet host Z597CMKJ30: labels role-engineer 
+t+0:26  == 0 failed
+
+---- and back ----
+
+t+0:29  == role change for jmbeki@tjcollins.dev: engineer (department Engineering) -> Marketing (OU /Staff, groups: all-staff marketing, device: mac)
+t+0:32  ok: in /Staff
+t+0:34  ok: member of all-staff@tjcollins.dev (in the Marketing role)
+Group: engineering@tjcollins.dev, Remove 1 Member
+  Group: engineering@tjcollins.dev, Member: jmbeki@tjcollins.dev, Removed: Role: MEMBER
+t+0:36  changed: removed from engineering@tjcollins.dev
+Group: marketing@tjcollins.dev, Add 1 Member
+  Group: marketing@tjcollins.dev, Member: jmbeki@tjcollins.dev, Added: Role: MEMBER
+t+0:38  changed: added to marketing@tjcollins.dev
+User: jmbeki@tjcollins.dev, Updated
+t+0:40  changed: title Marketing Manager, department Marketing
+t+0:42  changed: vm2-fleet.local removed from role-engineer
+t+0:42  changed: vm2-fleet.local added to role-marketing
+t+0:42  == verify jmbeki@tjcollins.dev
+t+0:43    OU: /Staff (role: /Staff)
+t+0:46    title: Marketing Manager; department: Marketing; manager: aengineer@tjcollins.dev
+t+0:47    group all-staff@tjcollins.dev: member
+t+0:49    group marketing@tjcollins.dev: member
+t+0:52    Fleet host Z597CMKJ30: labels role-marketing 
+t+0:53  == 0 failed

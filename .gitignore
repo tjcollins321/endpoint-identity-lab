@@ -51,3 +51,6 @@ fleet-license-key*
 # Chrome Enterprise Core browser enrollment token: lives outside the repo; a GitOps profile carrying it uses variable substitution
 CloudManagementEnrollmentToken*
 chrome-enrollment-token*
+
+# Lifecycle outbox: welcome kits rendered for hand-sending when GAM cannot send mail; personal data, never committed
+lifecycle/outbox/

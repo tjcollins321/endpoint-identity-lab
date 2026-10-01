@@ -1,0 +1,11 @@
+# Role software for marketing Macs, as vscode-installed.yml is for engineers: scoped to the
+# role-marketing label, installed by the automation when missing.
+- name: Zoom installed (marketing)
+  platform: darwin
+  description: Zoom is installed on every Mac issued to marketing staff.
+  resolution: Fleet installs Zoom when this policy fails on a marketing Mac; nothing to do by hand.
+  query: SELECT 1 FROM apps WHERE bundle_identifier = 'us.zoom.xos';
+  labels_include_any:
+    - role-marketing
+  install_software:
+    fleet_maintained_app_slug: zoom/darwin

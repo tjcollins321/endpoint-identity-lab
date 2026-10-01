@@ -1,0 +1,6 @@
+# A role label, as labels/role-engineer.yml: declared so that it exists and can scope software, with
+# no `hosts:` key on purpose, because membership is set through the API by the lifecycle scripts and
+# a `hosts:` key, even empty, would clear it on the next apply. Do not rename once a Mac holds it.
+- name: role-marketing
+  description: Macs issued to marketing staff. Zoom arrives by this label. Membership is set by lifecycle/onboard.sh through the API.
+  label_membership_type: manual

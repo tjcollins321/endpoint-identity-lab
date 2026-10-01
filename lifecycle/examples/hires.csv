@@ -1,0 +1,10 @@
+# The simulated hire record: what an HRIS export or a ticket webhook would deliver. One row per
+# hire, consumed by lifecycle/onboard-batch.sh. Columns: role (a catalog name), first, last,
+# personal_email (where the password and the welcome kit go), manager (a username or address),
+# start_date (YYYY-MM-DD), device (a Mac serial or a ChromeOS device id, empty when none is issued).
+# No commas inside fields. Fictional people; the personal address is a mailbox the lab admin reads.
+role,first,last,personal_email,manager,start_date,device
+engineer,Priya,Raman,tj@tjcollins.dev,aengineer,2026-10-06,ZQGCYXVWFJ
+marketing,Jordan,Mbeki,tj@tjcollins.dev,aengineer,2026-10-06,Z597CMKJ30
+sales,Chris,Salazar,tj@tjcollins.dev,aengineer,2026-10-06,31ab66b5-af3d-4736-97ca-434ff68e2f6c
+contractor,Morgan,Reyes,tj@tjcollins.dev,aengineer,2026-10-06,

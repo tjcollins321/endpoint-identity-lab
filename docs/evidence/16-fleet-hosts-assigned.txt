@@ -1,0 +1,38 @@
+# Fleet read-back, 2026-10-01: the two lab Macs after lifecycle/onboard.sh assigned them.
+# onboard.sh set each host's person-to-device mapping and added it to its role label through the
+# Fleet API (no GitOps apply); the install policies in fleet/gitops/fleets/workstations.yml then
+# delivered the role's apps. Clock times removed; dates kept. Source: GET /api/v1/fleet/hosts,
+# /hosts/:id, /hosts/:id/software?available_for_install=true, /hosts/:id/activities, /labels.
+
+== role labels (fleet/gitops/labels/*.yml: manual, no hosts: key; membership set by API)
+  role-engineer  type=manual  hosts=1  "Macs issued to engineers. VS Code arrives by this label. Membership is set by lifecycle/onboard.sh through the API."
+  role-marketing  type=manual  hosts=1  "Macs issued to marketing staff. Zoom arrives by this label. Membership is set by lifecycle/onboard.sh through the API."
+
+== vm2-fleet.local  (serial Z597CMKJ30, fleet Workstations, mdm On (manual), online)
+  mapping (custom): jmbeki@tjcollins.dev
+  labels: macOS 14+ (Sonoma+), All Hosts, macOS, canary, role-marketing
+  software available for install:
+    Slack  installed 4.52.171  status=installed  install policy: Slack installed
+    Zoom  installed 7.2.2 (88465)  status=installed  install policy: Zoom installed (marketing)
+  policies (role apps):
+    Google Chrome installed: pass
+    Slack installed: pass
+    Zoom installed (marketing): pass
+  installs by policy (date only):
+    2026-10-01  Zoom  installed  by policy "Zoom installed (marketing)"
+    2026-10-01  Slack  installed  by policy "Slack installed"
+
+== vm1-jamf.local  (serial ZQGCYXVWFJ, fleet Workstations, mdm On (manual), online)
+  mapping (custom): praman@tjcollins.dev
+  labels: macOS 14+ (Sonoma+), All Hosts, macOS, role-engineer
+  software available for install:
+    Microsoft Visual Studio Code  installed 1.140.0  status=installed  install policy: Visual Studio Code installed (engineers)
+    Slack  installed 4.52.171  status=installed  install policy: Slack installed
+  policies (role apps):
+    Google Chrome installed: pass
+    Slack installed: pass
+    Visual Studio Code installed (engineers): pass
+  installs by policy (date only):
+    2026-10-01  Microsoft Visual Studio Code  installed  by policy "Visual Studio Code installed (engineers)"
+    2026-10-01  Slack  installed  by policy "Slack installed"
+

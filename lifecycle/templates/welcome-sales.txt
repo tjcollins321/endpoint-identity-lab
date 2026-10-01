@@ -1,0 +1,1 @@
+A company Chromebook is being prepared for you. It is managed from the Workspace console: sign in with your work account and it configures itself, and everything you need runs in the browser. Collect it from IT on your first day. Help: docs/kb/your-chromebook.md.

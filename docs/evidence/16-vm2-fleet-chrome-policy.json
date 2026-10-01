@@ -1,0 +1,104 @@
+{
+  "chromeMetadata": {
+    "OS": "macOS Version 26.6.2 (Build 25G83)",
+    "application": "Google Chrome",
+    "revision": "f89f3a4363808e117c592adedcf9947882ac3b79-refs/branch-heads/8037@{#1590}",
+    "version": "154.0.8037.93 (Official Build) (arm64)"
+  },
+  "policyGroups": {
+    "chrome": {
+      "name": "Chrome Policies",
+      "policies": {
+        "AllowedDomainsForApps": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": "tjcollins.dev,gserviceaccount.com"
+        },
+        "CloudManagementEnrollmentToken": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "platform",
+          "value": "[redacted: the browser enrollment token is a secret]"
+        },
+        "CloudReportingEnabled": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "platform",
+          "value": true
+        },
+        "GenAiDefaultSettings": {
+          "info": "This policy is controlling the default behavior of the following policies: HelpMeWriteSettings, CreateThemesSettings, DevToolsGenAiSettings, HistorySearchSettings, TabCompareSettings, AutomatedPasswordChangeSettings, AutofillPredictionSettings, LensOverlaySettings, AIModeSettings, ThirdPartyAiChatSettings, GeminiSettings, VoiceTypingSettings, Indigo, SearchContentSharingSettings, FindAndFillWithGeminiSettings",
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": 1
+        },
+        "IncognitoModeAvailability": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": 1
+        },
+        "RestrictSigninToPattern": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": ".*@tjcollins\\.dev"
+        },
+        "SafeBrowsingProtectionLevel": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": 1
+        },
+        "SafeBrowsingProxiedRealTimeChecksAllowed": {
+          "level": "mandatory",
+          "scope": "machine",
+          "source": "cloud",
+          "value": true
+        }
+      }
+    },
+    "extensionInstall": {
+      "name": "Extension Install Policies",
+      "policies": {}
+    },
+    "extensions": {
+      "ghbmnnjooekpmoecnnnilnnbdlolhkhi": {
+        "forSigninScreen": false,
+        "id": "ghbmnnjooekpmoecnnnilnnbdlolhkhi",
+        "isExtension": true,
+        "name": "Google Docs Offline",
+        "policies": {}
+      }
+    },
+    "precedence": {
+      "name": "Policy Precedence",
+      "policies": {},
+      "precedenceOrder": [
+        "Platform machine",
+        "Cloud machine",
+        "Platform user",
+        "Cloud user"
+      ]
+    },
+    "updater": {
+      "name": "Google Update Policies",
+      "policies": {}
+    }
+  },
+  "status": {
+    "machine": {
+      "deviceId": "Z597CMKJ30",
+      "domain": "tjcollins.dev",
+      "enrollmentToken": "[redacted]",
+      "machine": "vm2-fleet",
+      "policiesPushAvailable": true,
+      "policyDescriptionKey": "statusMachine",
+      "status": "Policy cache OK"
+    },
+    "updater": {},
+    "user": {}
+  }
+}

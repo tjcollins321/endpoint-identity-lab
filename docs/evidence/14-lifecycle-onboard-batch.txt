@@ -1,0 +1,90 @@
+# lifecycle/onboard-batch.sh hires.csv, 2026-10-01: two hires from the catalog, Marketing (a Mac in Fleet) and Sales (a Chromebook). Offsets from the start of the run; the Engineer and Contractor hires were onboarded by hand earlier the same day. A second run of the same file changed nothing (0 failed on both rows).
+
+t+0:00  ==== row 1: Jordan Mbeki, marketing
+t+0:01  == onboarding Jordan Mbeki as Marketing (OU /Staff, groups: all-staff marketing, device: mac), start 2026-10-06
+t+0:02  note: GAM cannot mail the password to tj@tjcollins.dev: it sends mail only through a service account with domain-wide delegation, which this tenant does not grant; creating without the notification
+t+0:02  creating jmbeki@tjcollins.dev (Jordan Mbeki) in /Staff
+User: jmbeki@tjcollins.dev, Created
+t+0:04  verify:
+t+0:06  note: issue the initial password by another route: Admin console, Users, Jordan Mbeki, Reset password, email it; or set one and hand it over with the device
+t+0:07  changed: created jmbeki@tjcollins.dev in /Staff
+User: jmbeki@tjcollins.dev, Updated
+Waiting for User creation to complete. Sleeping 5 seconds
+t+0:14  changed: title Marketing Manager, department Marketing
+User: jmbeki@tjcollins.dev, Updated
+t+0:16  changed: manager aengineer@tjcollins.dev
+t+0:20  adding jmbeki@tjcollins.dev to all-staff@tjcollins.dev
+Group: all-staff@tjcollins.dev, Add 1 Member
+  Group: all-staff@tjcollins.dev, Member: jmbeki@tjcollins.dev, Added: Role: MEMBER
+t+0:24  adding jmbeki@tjcollins.dev to marketing@tjcollins.dev
+Group: marketing@tjcollins.dev, Add 1 Member
+  Group: marketing@tjcollins.dev, Member: jmbeki@tjcollins.dev, Added: Role: MEMBER
+t+0:25  verify:
+  jmbeki@tjcollins.dev is a member of all-staff@tjcollins.dev
+  jmbeki@tjcollins.dev is a member of marketing@tjcollins.dev
+t+0:29  ok: groups: all-staff marketing
+t+0:29  changed: welcome kit rendered to lifecycle/outbox/welcome-jmbeki.txt (GAM sends mail only through domain-wide delegation, which this tenant does not grant)
+t+0:30  changed: Fleet host vm2-fleet.local (Z597CMKJ30) mapped to jmbeki@tjcollins.dev
+t+0:30  changed: vm2-fleet.local added to role-marketing
+t+0:30  == verify jmbeki@tjcollins.dev
+t+0:32    OU: /Staff (role: /Staff)
+t+0:33    active
+t+0:35    title: Marketing Manager; department: Marketing; manager: 
+t+0:37    group all-staff: member
+t+0:39    group marketing: member
+t+0:40    2-step enrolled: false
+t+0:40    Fleet host Z597CMKJ30: mapping jmbeki@tjcollins.dev; labels: role-marketing 
+t+0:40  == manual steps
+[ ] issue the initial password: Admin console, Users, Jordan Mbeki, Reset password, email it to tj@tjcollins.dev; or set one and hand it over with the device (GAM mails it only through domain-wide delegation, which this tenant does not grant)
+[ ] send lifecycle/outbox/welcome-jmbeki.txt from the admin mailbox to tj@tjcollins.dev
+[ ] hand the Mac (vm2-fleet.local) to Jordan on 2026-10-06; at the first login they run scripts/mac-onboard.sh marketing
+[ ] after the first sign-in, confirm 2-Step Verification enrollment: gam info user jmbeki@tjcollins.dev shows 2-step enrolled
+t+0:40  == 0 failed
+t+0:40  ==== row 2: Chris Salazar, sales
+t+0:41  == onboarding Chris Salazar as Sales (OU /Staff, groups: all-staff sales, device: chromeos), start 2026-10-06
+t+0:42  note: GAM cannot mail the password to tj@tjcollins.dev: it sends mail only through a service account with domain-wide delegation, which this tenant does not grant; creating without the notification
+t+0:42  creating csalazar@tjcollins.dev (Chris Salazar) in /Staff
+User: csalazar@tjcollins.dev, Created
+t+0:44  verify:
+    First Name: Chris
+    Last Name: Salazar
+    Google Org Unit Path: /Staff
+t+0:46  note: issue the initial password by another route: Admin console, Users, Chris Salazar, Reset password, email it; or set one and hand it over with the device
+t+0:47  changed: created csalazar@tjcollins.dev in /Staff
+User: csalazar@tjcollins.dev, Updated
+t+0:49  changed: title Account Executive, department Sales
+User: csalazar@tjcollins.dev, Updated
+t+0:51  changed: manager aengineer@tjcollins.dev
+t+0:54  adding csalazar@tjcollins.dev to all-staff@tjcollins.dev
+Group: all-staff@tjcollins.dev, Add 1 Member
+  Group: all-staff@tjcollins.dev, Member: csalazar@tjcollins.dev, Added: Role: MEMBER
+t+0:57  adding csalazar@tjcollins.dev to sales@tjcollins.dev
+Group: sales@tjcollins.dev, Add 1 Member
+  Group: sales@tjcollins.dev, Member: csalazar@tjcollins.dev, Added: Role: MEMBER
+t+0:59  verify:
+  csalazar@tjcollins.dev is a member of all-staff@tjcollins.dev
+  csalazar@tjcollins.dev is a member of sales@tjcollins.dev
+t+1:02  ok: groups: all-staff sales
+t+1:03  changed: welcome kit rendered to lifecycle/outbox/welcome-csalazar.txt (GAM sends mail only through domain-wide delegation, which this tenant does not grant)
+CrOS Device: 31ab66b5-af3d-4736-97ca-434ff68e2f6c, Updated
+t+1:05  changed: Chromebook Flex-52:54:00:12:34:56 annotated to csalazar@tjcollins.dev
+t+1:05  ok: Chromebook Flex-52:54:00:12:34:56 is in /Devices
+t+1:05  == verify csalazar@tjcollins.dev
+t+1:06    OU: /Staff (role: /Staff)
+t+1:06    active
+t+1:09    title: Account Executive; department: Sales; manager: aengineer@tjcollins.dev
+t+1:11    group all-staff: member
+t+1:12    group sales: member
+t+1:13    2-step enrolled: false
+t+1:14    Chromebook Flex-52:54:00:12:34:56: user csalazar@tjcollins.dev; OU /Devices; status ACTIVE
+t+1:14  == manual steps
+[ ] issue the initial password: Admin console, Users, Chris Salazar, Reset password, email it to tj@tjcollins.dev; or set one and hand it over with the device (GAM mails it only through domain-wide delegation, which this tenant does not grant)
+[ ] send lifecycle/outbox/welcome-csalazar.txt from the admin mailbox to tj@tjcollins.dev
+[ ] hand the Chromebook (Flex-52:54:00:12:34:56) to Chris on 2026-10-06; user policy follows the /Staff OU, checked at chrome://policy after the first sign-in
+[ ] after the first sign-in, confirm 2-Step Verification enrollment: gam info user csalazar@tjcollins.dev shows 2-step enrolled
+t+1:14  == 0 failed
+t+1:14  ==== 2 row(s), 0 failed
+| Hire | Role | Result |
+|---|---|---|
+| Jordan Mbeki | marketing | ok |
+| Chris Salazar | sales | ok |

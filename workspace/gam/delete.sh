@@ -31,9 +31,12 @@ if ! user_exists "$user"; then
   exit 0
 fi
 
+offboarded_ou="${OFFBOARDED_OU:-/Offboarded}"
 if [ "$force" -eq 0 ]; then
   user_suspended "$user" || die "$user is active; run suspend.sh first, or use -f"
   drive_transferred "$user" || die "no completed Drive transfer from $user; run transfer-drive.sh first, or use -f"
+  ou=$("$GAM" info user "$user" quick 2>/dev/null | sed -n 's/^ *Google Org Unit Path: //p' | head -1)
+  [ "$ou" = "$offboarded_ou" ] || die "$user is in $ou, not $offboarded_ou; run lifecycle/offboard.sh first, or use -f"
 fi
 
 log "deleting $user"
