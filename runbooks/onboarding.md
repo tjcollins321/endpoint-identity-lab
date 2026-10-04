@@ -51,35 +51,41 @@ What it does, in order, reading before every write so a second run changes nothi
    device OU; user policy follows the person's OU. A BYOD role: nothing to assign.
 6. **Read-back,** then the checklist of what a human still does.
 
-Success looks like (offsets from the start of the run; the real transcript is
-`docs/evidence/14-lifecycle-onboard-run.txt`):
+Success looks like (the Marketing hire's row of the batch run in
+`docs/evidence/14-lifecycle-onboard-batch.txt`, offsets from the start of that run; GAM's own
+output, the notes, and the per-group lines are left out here, and the personal address in that run
+was a mailbox the lab admin reads):
 
 ```
-t+0:00  == onboarding Jordan Mbeki as Marketing (OU /Staff, groups: all-staff marketing, device: mac), start 2026-10-06
+t+0:01  == onboarding Jordan Mbeki as Marketing (OU /Staff, groups: all-staff marketing, device: mac), start 2026-10-06
 t+0:02  creating jmbeki@tjcollins.dev (Jordan Mbeki) in /Staff
 User: jmbeki@tjcollins.dev, Created
-t+0:04  changed: created jmbeki@tjcollins.dev in /Staff
-t+0:12  changed: title Marketing Manager, department Marketing
-t+0:14  changed: manager aengineer@tjcollins.dev
-t+0:24  ok: groups: all-staff marketing
-t+0:25  changed: welcome kit rendered to lifecycle/outbox/welcome-jmbeki.txt (GAM sends mail only through domain-wide delegation, which this tenant does not grant)
-t+0:26  changed: Fleet host vm2-fleet.local (Z597CMKJ30) mapped to jmbeki@tjcollins.dev
-t+0:26  changed: vm2-fleet.local added to role-marketing
-t+0:26  == verify jmbeki@tjcollins.dev
-t+0:27    OU: /Staff (role: /Staff)
-t+0:28    active
-t+0:31    title: Marketing Manager; department: Marketing; manager: aengineer@tjcollins.dev
-t+0:33    group all-staff: member
-t+0:34    group marketing: member
-t+0:35    2-step enrolled: false
-t+0:36    Fleet host Z597CMKJ30: mapping jmbeki@tjcollins.dev; labels: role-marketing
-t+0:36  == manual steps
-[ ] issue the initial password: Admin console, Users, Jordan Mbeki, Reset password, email it to them@example.com; or set one and hand it over with the device
-[ ] send lifecycle/outbox/welcome-jmbeki.txt from the admin mailbox to them@example.com
+t+0:07  changed: created jmbeki@tjcollins.dev in /Staff
+t+0:14  changed: title Marketing Manager, department Marketing
+t+0:16  changed: manager aengineer@tjcollins.dev
+t+0:29  ok: groups: all-staff marketing
+t+0:29  changed: welcome kit rendered to lifecycle/outbox/welcome-jmbeki.txt (GAM sends mail only through domain-wide delegation, which this tenant does not grant)
+t+0:30  changed: Fleet host vm2-fleet.local (Z597CMKJ30) mapped to jmbeki@tjcollins.dev
+t+0:30  changed: vm2-fleet.local added to role-marketing
+t+0:30  == verify jmbeki@tjcollins.dev
+t+0:32    OU: /Staff (role: /Staff)
+t+0:33    active
+t+0:35    title: Marketing Manager; department: Marketing; manager:
+t+0:37    group all-staff: member
+t+0:39    group marketing: member
+t+0:40    2-step enrolled: false
+t+0:40    Fleet host Z597CMKJ30: mapping jmbeki@tjcollins.dev; labels: role-marketing
+t+0:40  == manual steps
+[ ] issue the initial password: Admin console, Users, Jordan Mbeki, Reset password, email it to tj@tjcollins.dev; or set one and hand it over with the device (GAM mails it only through domain-wide delegation, which this tenant does not grant)
+[ ] send lifecycle/outbox/welcome-jmbeki.txt from the admin mailbox to tj@tjcollins.dev
 [ ] hand the Mac (vm2-fleet.local) to Jordan on 2026-10-06; at the first login they run scripts/mac-onboard.sh marketing
 [ ] after the first sign-in, confirm 2-Step Verification enrollment: gam info user jmbeki@tjcollins.dev shows 2-step enrolled
-t+0:36  == 0 failed
+t+0:40  == 0 failed
 ```
+
+A single hire onboarded by hand, an Engineer with a Mac, is section 1 of
+`docs/evidence/17-lifecycle-one-hire-arc.txt`; the per-user Mac setup and its read-back on that
+Mac are `docs/evidence/21-mac-onboard-verify.txt`.
 
 A `FAIL:` line names the step; fix the cause and run the same command again, which repeats
 nothing that succeeded. `-n` shows every step without changing anything.
@@ -99,7 +105,9 @@ Two steps a person does, because the tenant grants GAM no authority to act as a 
 - **Mac.** The MDM has already delivered the baseline (passcode, FileVault, restrictions, the
   Chrome enrollment token) and the apps follow the role label within the policy interval. At the
   first login the person runs, as themselves, `scripts/mac-onboard.sh <role>`: Homebrew for
-  engineers, the per-user defaults for everyone; a second run reports nothing to do. Then
+  engineers, the per-user defaults for everyone; a second run reports nothing to do. The person's
+  local account is created at handover (`mac-provisioning-fleet.md`); on the lab's virtual
+  machines the single administrator account stands in for it. Then
   `sudo scripts/mac-verify.sh <role>` reads everything back, or the same script runs from Fleet:
 
   ```bash
@@ -166,6 +174,8 @@ shows the same in one table. The Admin console's audit log records every write w
   suspended and report the reason.
 - **Reads lag writes.** `gam print users query` and `gam print groups member` search an index that
   lags a minute or more; the scripts use direct lookups (`gam info user`, `gam user X print groups`,
-  `gam print group-members` for one group) for every decision.
+  `gam print group-members` for one group) for every decision. A direct read can lag too: the
+  read-back in evidence 14 shows the manager empty nineteen seconds after it was set, and the
+  second run of the same file shows it.
 - **A deleted address is reserved for 20 days**, while the account can be restored, so a second
   test run needs different names.

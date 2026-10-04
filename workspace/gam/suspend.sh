@@ -36,6 +36,12 @@ fi
 log "suspending $user"
 "$GAM" suspend user "$user" || die "suspend failed"
 
+# A suspension can take a few seconds to read back, so the verify retries briefly.
+tries=0
+while ! user_suspended "$user" && [ "$tries" -lt 6 ]; do
+  tries=$((tries + 1))
+  sleep 3
+done
 log "verify:"
 "$GAM" check suspended "$user"
 user_suspended "$user" || die "account is not suspended after the call"

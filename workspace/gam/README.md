@@ -11,7 +11,7 @@ check afterwards; this file is the reference.
 | `add-to-groups.sh` | Onboarding 2, reorgs | Adds the account to one or more groups as a member, skipping groups it is already in |
 | `suspend.sh` | Offboarding 1 | Deletes app passwords, backup codes, and OAuth tokens, signs out every session, then suspends |
 | `transfer-drive.sh` | Offboarding 2 | Transfers Drive ownership to a named account through the Data Transfer API and waits for completion |
-| `delete.sh` | Offboarding 3 | Deletes the account; refuses unless it is suspended and its Drive has been transferred (`-f` overrides) |
+| `delete.sh` | Offboarding 3 | Deletes the account; refuses unless it is suspended, its Drive has been transferred, it is in `/Offboarded`, and the deletion date in its note has arrived (`-f` overrides) |
 
 Conventions: `#!/bin/bash`, bash 3.2-compatible (the macOS system bash), `shellcheck` clean,
 idempotent (a second run reports and changes nothing), and each script ends with a read-back

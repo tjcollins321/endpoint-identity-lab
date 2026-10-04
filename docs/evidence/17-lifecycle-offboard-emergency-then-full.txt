@@ -1,0 +1,97 @@
+# lifecycle/offboard.sh on the Engineer hire onboarded 2026-10-01 (Priya Raman, who held vm1-jamf), run 2026-10-04: the emergency form, then the full form, then the full form again. The Mac was handed back in person, so no lock was wanted. Offsets are from the start of each run. Two defects show here and were fixed the same day (Problems hit in runbooks/offboarding.md): in section 1 the check one second after the suspend call printed Account Suspended: False, a read that lagged the write (the account was suspended, as the first line of section 2 shows); in section 2 the script, run at a terminal without -y, never asked about the lock and left it on the checklist. Transfer IDs are opaque request IDs, not credentials.
+
+# 1. emergency form: lifecycle/offboard.sh -e praman (offsets from this run's start)
+t+0:00  == offboarding praman@tjcollins.dev (engineer), emergency form: access only
+t+0:03  deprovisioning praman@tjcollins.dev: app passwords, backup codes, OAuth tokens, sign-out
+User: praman@tjcollins.dev, Deprovision 0 Application Specific Password IDs
+User: praman@tjcollins.dev, Deprovision 0 Backup Verification Codes
+User: praman@tjcollins.dev, Deprovision 0 Access Tokens
+User: praman@tjcollins.dev, Signed Out
+User: praman@tjcollins.dev, Deprovisioned
+Getting Application Specific Password IDs for praman@tjcollins.dev
+Getting Backup Verification Codes for praman@tjcollins.dev
+Getting Access Tokens for praman@tjcollins.dev
+t+0:05  suspending praman@tjcollins.dev
+User: praman@tjcollins.dev, Suspended
+t+0:06  verify:
+User: praman@tjcollins.dev, Account Suspended: False
+t+0:08  changed: access cut: praman@tjcollins.dev suspended
+t+0:08  == manual steps
+[ ] finish the offboarding when the paperwork catches up: offboard.sh -m <new-owner> praman@tjcollins.dev
+t+0:08  == 0 failed
+
+# 2. full form: lifecycle/offboard.sh -m aengineer praman
+t+0:00  == offboarding praman@tjcollins.dev (engineer)
+t+0:01  ok: already suspended by an administrator
+t+0:06  transferring Drive ownership: praman@tjcollins.dev to aengineer@tjcollins.dev (private and shared files)
+Transfer Request Created
+  Transfer ID: AKrEtIa972u3gmGN4dWldB5rzNLpL8DCNkvjxIE1SoTuMK8twr-StIo6m2Sr7M9dsc9bvUvb3tHfuY1s575jGPkwgv2tWdWQ1w
+  Service: Drive and Docs
+  From: praman@tjcollins.dev
+  To: aengineer@tjcollins.dev
+Transfer ID: AKrEtIa972u3gmGN4dWldB5rzNLpL8DCNkvjxIE1SoTuMK8twr-StIo6m2Sr7M9dsc9bvUvb3tHfuY1s575jGPkwgv2tWdWQ1w, Status: completed
+Waiting for Data Transfer to complete. Sleeping 5 seconds
+t+0:13  verify:
+id,requestTime,oldOwnerUserEmail,newOwnerUserEmail,overallTransferStatusCode,application,applicationId,status,PRIVACY_LEVEL
+AKrEtIa972u3gmGN4dWldB5rzNLpL8DCNkvjxIE1SoTuMK8twr-StIo6m2Sr7M9dsc9bvUvb3tHfuY1s575jGPkwgv2tWdWQ1w,2026-10-04,praman@tjcollins.dev,aengineer@tjcollins.dev,completed,Drive and Docs,55656082996,completed,PRIVATE SHARED
+t+0:18  changed: Drive transferred to aengineer@tjcollins.dev
+Transfer Request Created
+  Transfer ID: AKrEtIa972u3gmGN4dWldB5rzNLpL8DCNkvjxIE1SoTuMK8twtRH0nGfVSmhamj1xLzzbN_X7FZ0477OOaUJ3sp2lXLM3hf66A
+  Service: Calendar
+  From: praman@tjcollins.dev
+  To: aengineer@tjcollins.dev
+Transfer ID: AKrEtIa972u3gmGN4dWldB5rzNLpL8DCNkvjxIE1SoTuMK8twtRH0nGfVSmhamj1xLzzbN_X7FZ0477OOaUJ3sp2lXLM3hf66A, Status: completed
+Waiting for Data Transfer to complete. Sleeping 5 seconds
+t+0:28  changed: Calendar transferred to aengineer@tjcollins.dev
+Group: all-staff@tjcollins.dev, Remove 1 Member
+  Group: all-staff@tjcollins.dev, Member: praman@tjcollins.dev, Removed: Role: MEMBER
+t+0:31  changed: removed from all-staff@tjcollins.dev
+Group: engineering@tjcollins.dev, Remove 1 Member
+  Group: engineering@tjcollins.dev, Member: praman@tjcollins.dev, Removed: Role: MEMBER
+t+0:32  changed: removed from engineering@tjcollins.dev
+User: praman@tjcollins.dev, Updated
+t+0:35  changed: moved to /Offboarded; delete on or after 2026-11-03
+t+0:35  ok: no personal devices under Workspace mobile management
+t+0:36  changed: vm1-jamf.local removed from role-engineer
+t+0:37  changed: vm1-jamf.local mapped to tj@tjcollins.dev
+t+0:37  ok: no Chromebook annotated to praman@tjcollins.dev
+t+0:38  ok: no Fleet console account
+t+0:38  == verify praman@tjcollins.dev
+t+0:38    suspended: ADMIN
+t+0:39    OU: /Offboarded
+t+0:41    groups:
+t+0:43    transfers completed: Drive and Docs>aengineer@tjcollins.dev Calendar>aengineer@tjcollins.dev
+t+0:44    personal devices under management: 0
+t+0:44    Fleet host ZQGCYXVWFJ: unlocked; mapping tj@tjcollins.dev; role labels:
+t+0:45    Fleet console account: none
+t+0:45  == manual steps
+[ ] mail: forward new mail to aengineer@tjcollins.dev with a Gmail routing rule, which has no API: Admin console, Apps, Google Workspace, Gmail, Routing, add a rule for envelope recipient praman@tjcollins.dev (inbound and internal), Modify message, Also deliver to aengineer@tjcollins.dev; the mailbox keeps its copy for retention
+[ ] on or after 2026-11-03: workspace/gam/delete.sh praman@tjcollins.dev (it refuses unless suspended, in /Offboarded, with Drive transferred), then remove the routing rule
+[ ] lock the Mac unless it is already in hand: fleetctl mdm lock --host ZQGCYXVWFJ (not sent: no confirmation; a rerun no longer finds the Mac by its mapping, so send it by hand)
+[ ] when the Mac (vm1-jamf.local, ZQGCYXVWFJ) returns: fleetctl mdm unlock --host ZQGCYXVWFJ shows the PIN; then re-provision it for the next person (runbooks/mac-provisioning-fleet.md)
+[ ] Jamf Now has no API: if praman@tjcollins.dev holds a device enrolled there (an iPad), lock it, then wipe or unenroll it in the console (runbooks/ipados-enrollment-jamf.md)
+t+0:45  == 0 failed
+
+# 3. the same command again: nothing changes
+t+0:00  == offboarding praman@tjcollins.dev (engineer)
+t+0:00  ok: already suspended by an administrator
+t+0:03  ok: Drive already transferred to aengineer@tjcollins.dev
+t+0:05  ok: Calendar already transferred to aengineer@tjcollins.dev
+t+0:06  ok: no group memberships
+t+0:08  ok: in /Offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03)
+t+0:08  ok: no personal devices under Workspace mobile management
+t+0:09  ok: no Fleet-managed Mac mapped to praman@tjcollins.dev
+t+0:10  ok: no Chromebook annotated to praman@tjcollins.dev
+t+0:10  ok: no Fleet console account
+t+0:10  == verify praman@tjcollins.dev
+t+0:11    suspended: ADMIN
+t+0:11    OU: /Offboarded
+t+0:12    groups:
+t+0:14    transfers completed: Drive and Docs>aengineer@tjcollins.dev Calendar>aengineer@tjcollins.dev
+t+0:15    personal devices under management: 0
+t+0:17    Fleet console account: none
+t+0:17  == manual steps
+[ ] mail: forward new mail to aengineer@tjcollins.dev with a Gmail routing rule, which has no API: Admin console, Apps, Google Workspace, Gmail, Routing, add a rule for envelope recipient praman@tjcollins.dev (inbound and internal), Modify message, Also deliver to aengineer@tjcollins.dev; the mailbox keeps its copy for retention
+[ ] on or after 2026-11-03: workspace/gam/delete.sh praman@tjcollins.dev (it refuses unless suspended, in /Offboarded, with Drive transferred), then remove the routing rule
+[ ] Jamf Now has no API: if praman@tjcollins.dev holds a device enrolled there (an iPad), lock it, then wipe or unenroll it in the console (runbooks/ipados-enrollment-jamf.md)
+t+0:17  == 0 failed

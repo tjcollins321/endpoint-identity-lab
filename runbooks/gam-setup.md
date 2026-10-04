@@ -5,7 +5,8 @@ the tenant, or re-authorizing after the admin's password or second factor change
 
 **When NOT to use this:** giving GAM access to user data (mail contents, Drive files, calendars)
 on a user's behalf. That is domain-wide delegation for a service account, which this lab does
-not use; step 2 says why, and `docs/design.md` covers what changes at scale.
+not use; step 2 says why, `decisions/no-domain-wide-delegation.md` records the decision and its
+cost, and `docs/design.md` covers what changes at scale.
 
 Everything here runs as the tenant's super admin through an OAuth client in a Cloud project
 the tenant owns. Nothing produced by it goes in the repository: see the file table at the end.

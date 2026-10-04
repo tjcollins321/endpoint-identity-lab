@@ -1,0 +1,46 @@
+# scripts/mac-onboard.sh and scripts/mac-verify.sh on vm1-jamf, 2026-10-04, run in Terminal on the virtual Mac itself, in the session of its single local account (which stands in for the person; runbooks/mac-provisioning-fleet.md), while the Mac was assigned to the Engineer hire: the per-user setup for the engineer role, the same command again, and the read-back. The scripts print no clock times.
+
+# 1. mac-onboard.sh engineer
+== onboarding vm1-jamf, macOS 26.6.2, user labadmin, role engineer
+installing Homebrew; your password is asked once
+[Homebrew's installer output left out, 71 lines: the Command Line Tools and Homebrew installed under /opt/homebrew]
+changed: Homebrew installed
+changed: Homebrew shellenv added to ~/.zprofile
+changed: NSGlobalDomain AppleShowAllExtensions: unset -> true
+changed: NSGlobalDomain NSDocumentSaveNewDocumentsToCloud: unset -> false
+changed: com.apple.finder ShowPathbar: unset -> true
+changed: com.apple.finder ShowStatusBar: unset -> true
+Finder relaunched to pick up the new defaults
+== done: 6 change(s); run mac-verify.sh to confirm
+
+# 2. the same command again: nothing changes
+== onboarding vm1-jamf, macOS 26.6.2, user labadmin, role engineer
+ok: Homebrew 7.0.7 present
+ok: Homebrew shellenv in ~/.zprofile
+ok: NSGlobalDomain AppleShowAllExtensions = true
+ok: NSGlobalDomain NSDocumentSaveNewDocumentsToCloud = false
+ok: com.apple.finder ShowPathbar = true
+ok: com.apple.finder ShowStatusBar = true
+== done: nothing to do, this Mac already matches the baseline
+
+# 3. mac-verify.sh engineer
+INFO  Mac                                vm1-jamf, VirtualMac2,1, serial ZQGCYXVWFJ
+INFO  macOS                              26.6.2 build 25G83
+INFO  Console user                       labadmin
+PASS  MDM enrollment                     Fleet at fleet.tjcollins.dev
+PASS  User-approved MDM                  yes
+INFO  Automated Device Enrollment        No
+INFO  Agent                              fleetd, orbit 1.61.0
+PASS  FileVault                          on
+INFO  Configuration profiles             run with sudo to list system profiles
+PASS  Command Line Tools                 /Library/Developer/CommandLineTools
+PASS  Homebrew                           Homebrew 7.0.7
+PASS  App: Google Chrome                 154.0.8037.93
+PASS  App: Slack                         4.52.171
+PASS  App: Visual Studio Code (engineer) 1.140.0
+INFO  App: Zoom (marketing)              absent; not expected for the engineer role
+PASS  Default: NSGlobalDomain AppleShowAllExtensions true
+PASS  Default: NSGlobalDomain NSDocumentSaveNewDocumentsToCloud false
+PASS  Default: com.apple.finder ShowPathbar true
+PASS  Default: com.apple.finder ShowStatusBar true
+== 12 passed, 0 failed

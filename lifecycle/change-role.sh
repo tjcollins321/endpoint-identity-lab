@@ -13,7 +13,8 @@
 #   -S  strict: remove every group not in the new role, one-off grants included
 #   -D  skip the device step
 #   -n  dry run
-# Exit 0 all ok, 1 a step failed, 2 usage or catalog error.
+# Exit 0 all ok, 1 a step failed or a precondition did not hold (an unknown role, a missing
+# account), 2 usage error.
 
 set -u
 # shellcheck source-path=SCRIPTDIR
@@ -50,6 +51,7 @@ if [ -n "$manager" ]; then
   user_exists "$manager" || die "manager $manager does not exist"
 fi
 admin=$(lab_admin)
+[ -n "$admin" ] || die "could not determine the admin address from gam oauth info; aborting before any device is remapped"
 
 old_dept=$(user_department "$addr")
 old_role=$(role_for_department "$old_dept" || echo "")
@@ -69,31 +71,36 @@ fi
 
 # 2. Groups: remove what other catalog roles grant and the new role does not; add what it grants;
 #    keep and report the rest. With -S, everything outside the new role goes.
-current=$(user_groups "$addr")
+groups_read=1
+current=$(user_groups "$addr") || groups_read=0
 managed=$(role_all_groups | while read -r g; do qualify "$g"; done)
 wanted=$(printf '%s\n' "$ROLE_GROUPS" | tr ' ' '\n' | while read -r g; do [ -n "$g" ] && qualify "$g"; done)
-for g in $current; do
-  if printf '%s\n' "$wanted" | grep -qix "$g"; then
-    ok "member of $g (in the $ROLE_NAME role)"
-  elif [ "$strict" -eq 1 ] || printf '%s\n' "$managed" | grep -qix "$g"; then
-    if do_cmd "remove $addr from $g" "$GAM" update group "$g" delete member "$addr"; then
-      [ "$DRYRUN" -eq 1 ] || changed "removed from $g"
+if [ "$groups_read" -eq 0 ]; then
+  fail "could not read the group memberships of $addr; none added or removed on this run"
+else
+  for g in $current; do
+    if printf '%s\n' "$wanted" | grep -qix "$g"; then
+      ok "member of $g (in the $ROLE_NAME role)"
+    elif [ "$strict" -eq 1 ] || printf '%s\n' "$managed" | grep -qix "$g"; then
+      if do_cmd "remove $addr from $g" "$GAM" update group "$g" delete member "$addr"; then
+        [ "$DRYRUN" -eq 1 ] || changed "removed from $g"
+      else
+        fail "could not remove $addr from $g"
+      fi
     else
-      fail "could not remove $addr from $g"
+      ok "kept $g (not in the catalog: a one-off grant; review it, or rerun with -S to remove it)"
     fi
-  else
-    ok "kept $g (not in the catalog: a one-off grant; review it, or rerun with -S to remove it)"
-  fi
-done
-for g in $wanted; do
-  if printf '%s\n' "$current" | grep -qix "$g"; then
-    :
-  elif do_cmd "add $addr to $g" "$GAM" update group "$g" add member "$addr"; then
-    [ "$DRYRUN" -eq 1 ] || changed "added to $g"
-  else
-    fail "could not add $addr to $g"
-  fi
-done
+  done
+  for g in $wanted; do
+    if printf '%s\n' "$current" | grep -qix "$g"; then
+      :
+    elif do_cmd "add $addr to $g" "$GAM" update group "$g" add member "$addr"; then
+      [ "$DRYRUN" -eq 1 ] || changed "added to $g"
+    else
+      fail "could not add $addr to $g"
+    fi
+  done
+fi
 
 # 3. Title, department, manager.
 if [ "$(user_title "$addr")" = "$title" ] && [ "$(user_department "$addr")" = "$ROLE_DEPARTMENT" ]; then
@@ -128,9 +135,11 @@ reclaim_mac() { # id serial hostname
 if [ "$skip_device" -eq 1 ]; then
   ok "device step skipped (-D)"
 else
-  macs=$(fleet_hosts_by_email "$addr")
-  croses=$(cros_by_user "$addr")
-  case "$ROLE_DEVICE" in
+  # A lookup that fails is not "no device": the device step is skipped and the run fails.
+  dev_class="$ROLE_DEVICE"
+  macs=$(fleet_hosts_by_email "$addr") || { dev_class=unread; fail "could not read Fleet for the Macs mapped to $addr; the device step is skipped on this run"; }
+  croses=$(cros_by_user "$addr") || { dev_class=unread; fail "could not read the Chromebooks annotated to $addr; the device step is skipped on this run"; }
+  case "$dev_class" in
     mac)
       if [ -z "$macs" ] && [ -z "$device" ]; then
         manual "issue a Mac for the $ROLE_NAME role: provision it (runbooks/mac-provisioning-fleet.md), then rerun with -d <serial>"
@@ -169,7 +178,7 @@ else
       done <<< "$macs"
       ;;
   esac
-  case "$ROLE_DEVICE" in
+  case "$dev_class" in
     chromeos)
       if [ -n "$device" ]; then
         cj=$(cros_json "$device")

@@ -1,0 +1,206 @@
+# One fictional hire through the whole lifecycle, run on 2026-10-04 against the lab's Google Workspace tenant and its Fleet server: Samira Haddad onboarded as an Engineer with a Fleet-managed Mac (vm1-jamf, a virtual machine), her first sign-in and single sign-on to the Fleet console, a transfer to Marketing, and her offboarding. Offsets are from the start of each run, and each run that writes is followed by the same command again, which changes nothing. Before section 6 the Mac was locked from the Fleet console, not by the script, as a first test of the lock on a virtual Mac: the command was acknowledged and the virtual machine never drew its PIN screen (Problems hit in runbooks/offboarding.md), so the offboarding run reports the Mac as already locked. Transfer IDs are opaque request IDs, not credentials.
+
+# 1. onboarding: lifecycle/onboard.sh -p tj@tjcollins.dev -m aengineer -s 2026-10-05 -d ZQGCYXVWFJ engineer Samira Haddad (offsets from this run's start)
+t+0:00  == onboarding Samira Haddad as Engineer (OU /Staff, groups: all-staff engineering, device: mac), start 2026-10-05
+t+0:02  note: GAM cannot mail the password to tj@tjcollins.dev: it sends mail only through a service account with domain-wide delegation, which this tenant does not grant; creating without the notification
+t+0:02  creating shaddad@tjcollins.dev (Samira Haddad) in /Staff
+User: shaddad@tjcollins.dev, Created
+t+0:03  verify:
+    First Name: Samira
+    Last Name: Haddad
+    Google Org Unit Path: /Staff
+t+0:05  note: issue the initial password by another route: Admin console, Users, Samira Haddad, Reset password, email it; or set one and hand it over with the device
+t+0:06  changed: created shaddad@tjcollins.dev in /Staff
+User: shaddad@tjcollins.dev, Updated
+t+0:09  changed: title Software Engineer, department Engineering
+User: shaddad@tjcollins.dev, Updated
+t+0:11  changed: manager aengineer@tjcollins.dev
+t+0:14  adding shaddad@tjcollins.dev to all-staff@tjcollins.dev
+Group: all-staff@tjcollins.dev, Add 1 Member
+  Group: all-staff@tjcollins.dev, Member: shaddad@tjcollins.dev, Added: Role: MEMBER
+t+0:18  adding shaddad@tjcollins.dev to engineering@tjcollins.dev
+Group: engineering@tjcollins.dev, Add 1 Member
+  Group: engineering@tjcollins.dev, Member: shaddad@tjcollins.dev, Added: Role: MEMBER
+t+0:19  verify:
+  shaddad@tjcollins.dev is a member of all-staff@tjcollins.dev
+  shaddad@tjcollins.dev is a member of engineering@tjcollins.dev
+t+0:22  ok: groups: all-staff engineering
+t+0:23  changed: welcome kit rendered to lifecycle/outbox/welcome-shaddad.txt (GAM sends mail only through domain-wide delegation, which this tenant does not grant)
+t+0:24  changed: Fleet host vm1-jamf.local (ZQGCYXVWFJ) mapped to shaddad@tjcollins.dev
+t+0:24  changed: vm1-jamf.local added to role-engineer
+t+0:24  == verify shaddad@tjcollins.dev
+t+0:25    OU: /Staff (role: /Staff)
+t+0:26    active
+t+0:29    title: Software Engineer; department: Engineering; manager: aengineer@tjcollins.dev
+t+0:31    group all-staff: member
+t+0:32    group engineering: member
+t+0:33    2-step enrolled: false
+t+0:34    Fleet host ZQGCYXVWFJ: mapping shaddad@tjcollins.dev; labels: role-engineer
+t+0:34  == manual steps
+[ ] issue the initial password: Admin console, Users, Samira Haddad, Reset password, email it to tj@tjcollins.dev; or set one and hand it over with the device (GAM mails it only through domain-wide delegation, which this tenant does not grant)
+[ ] send lifecycle/outbox/welcome-shaddad.txt from the admin mailbox to tj@tjcollins.dev
+[ ] hand the Mac (vm1-jamf.local) to Samira on 2026-10-05; at the first login they run scripts/mac-onboard.sh engineer
+[ ] after the first sign-in, confirm 2-Step Verification enrollment: gam info user shaddad@tjcollins.dev shows 2-step enrolled
+t+0:34  == 0 failed
+
+# 2. the same command again: nothing changes
+t+0:00  == onboarding Samira Haddad as Engineer (OU /Staff, groups: all-staff engineering, device: mac), start 2026-10-05
+t+0:01  ok: account shaddad@tjcollins.dev exists
+t+0:01  ok: in /Staff
+t+0:03  ok: title Software Engineer, department Engineering
+t+0:04  ok: manager aengineer@tjcollins.dev
+t+0:07  member already: shaddad@tjcollins.dev in all-staff@tjcollins.dev
+t+0:09  member already: shaddad@tjcollins.dev in engineering@tjcollins.dev
+t+0:09  verify:
+  shaddad@tjcollins.dev is a member of all-staff@tjcollins.dev
+  shaddad@tjcollins.dev is a member of engineering@tjcollins.dev
+t+0:12  ok: groups: all-staff engineering
+t+0:12  ok: welcome kit: sent only on the run that creates the account, or with -W
+t+0:13  ok: Fleet host vm1-jamf.local (ZQGCYXVWFJ) is mapped to shaddad@tjcollins.dev
+t+0:13  ok: vm1-jamf.local carries the role-engineer label
+t+0:13  == verify shaddad@tjcollins.dev
+t+0:14    OU: /Staff (role: /Staff)
+t+0:15    active
+t+0:17    title: Software Engineer; department: Engineering; manager: aengineer@tjcollins.dev
+t+0:19    group all-staff: member
+t+0:20    group engineering: member
+t+0:21    2-step enrolled: false
+t+0:22    Fleet host ZQGCYXVWFJ: mapping shaddad@tjcollins.dev; labels: role-engineer
+t+0:22  == manual steps
+[ ] hand the Mac (vm1-jamf.local) to Samira on 2026-10-05; at the first login they run scripts/mac-onboard.sh engineer
+[ ] after the first sign-in, confirm 2-Step Verification enrollment: gam info user shaddad@tjcollins.dev shows 2-step enrolled
+t+0:22  == 0 failed
+
+# 3. Fleet console accounts after her first single sign-on (email, role, SSO): fleetctl api /api/v1/fleet/users
+tj@tjcollins.dev	admin	false
+aengineer@tjcollins.dev	observer	true
+shaddad@tjcollins.dev	observer	true
+
+# 4. transfer: lifecycle/change-role.sh shaddad marketing
+t+0:00  == role change for shaddad@tjcollins.dev: engineer (department Engineering) -> Marketing (OU /Staff, groups: all-staff marketing, device: mac)
+t+0:02  ok: in /Staff
+t+0:04  ok: member of all-staff@tjcollins.dev (in the Marketing role)
+Group: engineering@tjcollins.dev, Remove 1 Member
+  Group: engineering@tjcollins.dev, Member: shaddad@tjcollins.dev, Removed: Role: MEMBER
+t+0:05  changed: removed from engineering@tjcollins.dev
+Group: marketing@tjcollins.dev, Add 1 Member
+  Group: marketing@tjcollins.dev, Member: shaddad@tjcollins.dev, Added: Role: MEMBER
+t+0:07  changed: added to marketing@tjcollins.dev
+User: shaddad@tjcollins.dev, Updated
+t+0:09  changed: title Marketing Manager, department Marketing
+t+0:10  changed: vm1-jamf.local removed from role-engineer
+t+0:11  changed: vm1-jamf.local added to role-marketing
+t+0:11  == verify shaddad@tjcollins.dev
+t+0:11    OU: /Staff (role: /Staff)
+t+0:14    title: Marketing Manager; department: Marketing; manager: aengineer@tjcollins.dev
+t+0:16    group all-staff@tjcollins.dev: member
+t+0:21    group marketing@tjcollins.dev: member
+t+0:24    Fleet host ZQGCYXVWFJ: labels role-marketing
+t+0:25  == 0 failed
+
+# 5. the same command again: nothing changes
+t+0:00  == role change for shaddad@tjcollins.dev: marketing (department Marketing) -> Marketing (OU /Staff, groups: all-staff marketing, device: mac)
+t+0:01  ok: in /Staff
+t+0:03  ok: member of all-staff@tjcollins.dev (in the Marketing role)
+t+0:03  ok: member of marketing@tjcollins.dev (in the Marketing role)
+t+0:05  ok: title Marketing Manager, department Marketing
+t+0:06  ok: vm1-jamf.local carries the role-marketing label
+t+0:06  == verify shaddad@tjcollins.dev
+t+0:07    OU: /Staff (role: /Staff)
+t+0:10    title: Marketing Manager; department: Marketing; manager: aengineer@tjcollins.dev
+t+0:11    group all-staff@tjcollins.dev: member
+t+0:13    group marketing@tjcollins.dev: member
+t+0:15    Fleet host ZQGCYXVWFJ: labels role-marketing
+t+0:16  == 0 failed
+
+# 6. offboarding: lifecycle/offboard.sh -m aengineer shaddad
+t+0:00  == offboarding shaddad@tjcollins.dev (marketing)
+t+0:02  deprovisioning shaddad@tjcollins.dev: app passwords, backup codes, OAuth tokens, sign-out
+User: shaddad@tjcollins.dev, Deprovision 0 Application Specific Password IDs
+User: shaddad@tjcollins.dev, Deprovision 0 Backup Verification Codes
+User: shaddad@tjcollins.dev, Deprovision 0 Access Tokens
+User: shaddad@tjcollins.dev, Signed Out
+User: shaddad@tjcollins.dev, Deprovisioned
+Getting Application Specific Password IDs for shaddad@tjcollins.dev
+Getting Backup Verification Codes for shaddad@tjcollins.dev
+Getting Access Tokens for shaddad@tjcollins.dev
+t+0:04  suspending shaddad@tjcollins.dev
+User: shaddad@tjcollins.dev, Suspended
+t+0:10  verify:
+User: shaddad@tjcollins.dev, Account Suspended: True, Suspension Reason: ADMIN
+t+0:11  changed: access cut: shaddad@tjcollins.dev suspended
+t+0:17  transferring Drive ownership: shaddad@tjcollins.dev to aengineer@tjcollins.dev (private and shared files)
+Transfer Request Created
+  Transfer ID: AKrEtIaM_wiCi0pgeR2I_DsGKcTg9S0wWIDcVzz6apvIXQggKaS0jAQ1pMovtzx9qnpMdqRwRjD2Ra2LfUbf934Z0rgbV0DYmA
+  Service: Drive and Docs
+  From: shaddad@tjcollins.dev
+  To: aengineer@tjcollins.dev
+Transfer ID: AKrEtIaM_wiCi0pgeR2I_DsGKcTg9S0wWIDcVzz6apvIXQggKaS0jAQ1pMovtzx9qnpMdqRwRjD2Ra2LfUbf934Z0rgbV0DYmA, Status: completed
+Waiting for Data Transfer to complete. Sleeping 5 seconds
+t+0:24  verify:
+id,requestTime,oldOwnerUserEmail,newOwnerUserEmail,overallTransferStatusCode,application,applicationId,status,PRIVACY_LEVEL
+AKrEtIaM_wiCi0pgeR2I_DsGKcTg9S0wWIDcVzz6apvIXQggKaS0jAQ1pMovtzx9qnpMdqRwRjD2Ra2LfUbf934Z0rgbV0DYmA,2026-10-04,shaddad@tjcollins.dev,aengineer@tjcollins.dev,completed,Drive and Docs,55656082996,completed,PRIVATE SHARED
+t+0:29  changed: Drive transferred to aengineer@tjcollins.dev
+Transfer Request Created
+  Transfer ID: AKrEtIaM_wiCi0pgeR2I_DsGKcTg2I2yfg0Cb8Nb5f-JfO6wN8hg-MLtneHMHdTZ9hZG6koNSbJuGTQ7_pNDq4sRGhruCCkoRA
+  Service: Calendar
+  From: shaddad@tjcollins.dev
+  To: aengineer@tjcollins.dev
+Transfer ID: AKrEtIaM_wiCi0pgeR2I_DsGKcTg2I2yfg0Cb8Nb5f-JfO6wN8hg-MLtneHMHdTZ9hZG6koNSbJuGTQ7_pNDq4sRGhruCCkoRA, Status: completed
+Waiting for Data Transfer to complete. Sleeping 5 seconds
+t+0:38  changed: Calendar transferred to aengineer@tjcollins.dev
+Group: all-staff@tjcollins.dev, Remove 1 Member
+  Group: all-staff@tjcollins.dev, Member: shaddad@tjcollins.dev, Removed: Role: MEMBER
+t+0:41  changed: removed from all-staff@tjcollins.dev
+Group: marketing@tjcollins.dev, Remove 1 Member
+  Group: marketing@tjcollins.dev, Member: shaddad@tjcollins.dev, Removed: Role: MEMBER
+t+0:42  changed: removed from marketing@tjcollins.dev
+User: shaddad@tjcollins.dev, Updated
+t+0:44  changed: moved to /Offboarded; delete on or after 2026-11-03
+t+0:46  ok: no personal devices under Workspace mobile management
+t+0:46  ok: vm1-jamf.local (ZQGCYXVWFJ) is locked
+t+0:46  changed: vm1-jamf.local removed from role-marketing
+t+0:47  changed: vm1-jamf.local mapped to tj@tjcollins.dev
+t+0:47  ok: no Chromebook annotated to shaddad@tjcollins.dev
+t+0:48  changed: Fleet console account deleted
+t+0:48  == verify shaddad@tjcollins.dev
+t+0:49    suspended: ADMIN
+t+0:49    OU: /Offboarded
+t+0:51    groups:
+t+0:53    transfers completed: Drive and Docs>aengineer@tjcollins.dev Calendar>aengineer@tjcollins.dev
+t+0:54    personal devices under management: 0
+t+0:54    Fleet host ZQGCYXVWFJ: locked; mapping tj@tjcollins.dev; role labels:
+t+0:55    Fleet console account: none
+t+0:55  == manual steps
+[ ] mail: forward new mail to aengineer@tjcollins.dev with a Gmail routing rule, which has no API: Admin console, Apps, Google Workspace, Gmail, Routing, add a rule for envelope recipient shaddad@tjcollins.dev (inbound and internal), Modify message, Also deliver to aengineer@tjcollins.dev; the mailbox keeps its copy for retention
+[ ] on or after 2026-11-03: workspace/gam/delete.sh shaddad@tjcollins.dev (it refuses before that date, and unless suspended, in /Offboarded, with Drive transferred), then remove the routing rule
+[ ] when the Mac (vm1-jamf.local, ZQGCYXVWFJ) returns: fleetctl mdm unlock --host ZQGCYXVWFJ shows the PIN; then re-provision it for the next person (runbooks/mac-provisioning-fleet.md)
+[ ] Jamf Now has no API: if shaddad@tjcollins.dev holds a device enrolled there (an iPad), lock it, then wipe or unenroll it in the console (runbooks/ipados-enrollment-jamf.md)
+t+0:55  == 0 failed
+
+# 7. the same command again: nothing changes
+t+0:00  == offboarding shaddad@tjcollins.dev (marketing)
+t+0:00  ok: already suspended by an administrator
+t+0:02  ok: Drive already transferred to aengineer@tjcollins.dev
+t+0:05  ok: Calendar already transferred to aengineer@tjcollins.dev
+t+0:06  ok: no group memberships
+t+0:08  ok: in /Offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03)
+t+0:08  ok: no personal devices under Workspace mobile management
+t+0:09  ok: no Fleet-managed Mac mapped to shaddad@tjcollins.dev
+t+0:10  ok: no Chromebook annotated to shaddad@tjcollins.dev
+t+0:10  ok: no Fleet console account
+t+0:10  == verify shaddad@tjcollins.dev
+t+0:10    suspended: ADMIN
+t+0:11    OU: /Offboarded
+t+0:12    groups:
+t+0:14    transfers completed: Drive and Docs>aengineer@tjcollins.dev Calendar>aengineer@tjcollins.dev
+t+0:15    personal devices under management: 0
+t+0:16    Fleet console account: none
+t+0:16  == manual steps
+[ ] mail: forward new mail to aengineer@tjcollins.dev with a Gmail routing rule, which has no API: Admin console, Apps, Google Workspace, Gmail, Routing, add a rule for envelope recipient shaddad@tjcollins.dev (inbound and internal), Modify message, Also deliver to aengineer@tjcollins.dev; the mailbox keeps its copy for retention
+[ ] on or after 2026-11-03: workspace/gam/delete.sh shaddad@tjcollins.dev (it refuses before that date, and unless suspended, in /Offboarded, with Drive transferred), then remove the routing rule
+[ ] Jamf Now has no API: if shaddad@tjcollins.dev holds a device enrolled there (an iPad), lock it, then wipe or unenroll it in the console (runbooks/ipados-enrollment-jamf.md)
+t+0:16  == 0 failed
+
+# 8. deletion before the retention date: workspace/gam/delete.sh shaddad
+error: shaddad@tjcollins.dev is in its retention period; delete on or after 2026-11-03, or use -f

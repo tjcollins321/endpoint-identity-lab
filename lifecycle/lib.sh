@@ -138,7 +138,7 @@ role_article() {
 }
 
 # --- Workspace account reads (direct lookups, JSON) ----------------------------------------------
-user_json()       { "$GAM" info user "$1" quick formatjson 2>/dev/null; }
+user_json()       { gam_read info user "$1" quick formatjson; }
 user_field()      { user_json "$1" | "$JQ" -r "$2 | if . == null then empty else tostring end"; }
 user_ou()         { user_field "$1" '.orgUnitPath'; }
 user_title()      { user_field "$1" '.organizations[0].title'; }
@@ -147,7 +147,14 @@ user_manager()    { user_field "$1" '[.relations[]? | select(.type == "manager")
 user_note()       { user_field "$1" '.notes.value'; }
 user_2sv()        { user_field "$1" '.isEnrolledIn2Sv'; }
 # The account's groups, full addresses, one per line (a direct lookup, not the search index).
-user_groups()     { "$GAM" user "$1" print groups 2>/dev/null | tail -n +2 | cut -d, -f2; }
+# Returns 1 when the read failed: the listing prints its header even for an account with no
+# groups, so a caller can tell "none" from "could not ask".
+user_groups() {
+  local out
+  out=$(gam_read user "$1" print groups) || return 1
+  [ -n "$out" ] || return 1
+  printf '%s\n' "$out" | tail -n +2 | cut -d, -f2
+}
 user_in_group()   { user_groups "$1" | grep -qix "$(qualify "$2")"; }
 user_fullname() {
   local names
@@ -220,7 +227,8 @@ user_in_group_settled() {
 # --- Fleet (the Macs) -------------------------------------------------------------------------------
 fleet_url()   { if [ -n "${FLEET_URL:-}" ]; then echo "$FLEET_URL"; else sed -n 's/^ *address: //p' "$FLEET_CONFIG" 2>/dev/null | head -1; fi; }
 fleet_token() { if [ -n "${FLEET_API_TOKEN:-}" ]; then echo "$FLEET_API_TOKEN"; else sed -n 's/^ *token: //p' "$FLEET_CONFIG" 2>/dev/null | head -1; fi; }
-# fleet_api METHOD PATH [JSON-BODY]: prints the response body; fails on an HTTP error.
+# fleet_api METHOD PATH [JSON-BODY]: prints the response body; fails on an HTTP error, or after a
+# minute, so a tunnel outage fails the step instead of hanging the run.
 fleet_api() {
   local method="$1" path="$2" body="${3:-}" url token
   url=$(fleet_url); token=$(fleet_token)
@@ -229,9 +237,9 @@ fleet_api() {
     return 1
   fi
   if [ -n "$body" ]; then
-    curl -sS -f -X "$method" -H "Authorization: Bearer $token" -H "Content-Type: application/json" -d "$body" "$url$path"
+    curl -sS -f --max-time 60 -X "$method" -H "Authorization: Bearer $token" -H "Content-Type: application/json" -d "$body" "$url$path"
   else
-    curl -sS -f -X "$method" -H "Authorization: Bearer $token" "$url$path"
+    curl -sS -f --max-time 60 -X "$method" -H "Authorization: Bearer $token" "$url$path"
   fi
 }
 # A host by serial, hostname, or UUID: the host object, or nothing when unknown.
@@ -242,17 +250,25 @@ fleet_host_labels()  { "$JQ" -r '.labels[]?.name' <<< "$1"; }
 fleet_mapping_of()   { fleet_api GET "/api/v1/fleet/hosts/$1/device_mapping" 2>/dev/null | "$JQ" -r '[.device_mapping[]? | select(.source == "custom") | .email][0] // empty'; }
 fleet_host_lock()    { "$JQ" -r '.mdm.device_status // "unknown"' <<< "$1"; }
 fleet_host_pending() { "$JQ" -r '.mdm.pending_action // empty' <<< "$1"; }
+fleet_host_model()   { "$JQ" -r '.hardware_model // empty' <<< "$1"; }
 fleet_host_serial()  { "$JQ" -r '.hardware_serial' <<< "$1"; }
 fleet_host_name()    { "$JQ" -r '.hostname' <<< "$1"; }
-# Hosts whose custom mapping is the given address: "id<TAB>serial<TAB>hostname" per line.
+# Hosts whose custom mapping is the given address: "id<TAB>serial<TAB>hostname" per line. Returns
+# 1 when Fleet could not be read, which is not the same as no host.
 fleet_hosts_by_email() {
-  fleet_api GET "/api/v1/fleet/hosts?device_mapping=true&per_page=500" 2>/dev/null \
-    | "$JQ" -r --arg e "$1" '.hosts[] | select(any(.device_mapping[]?; .email == $e and .source == "custom")) | [.id, .hardware_serial, .hostname] | @tsv'
+  local out
+  out=$(fleet_api GET "/api/v1/fleet/hosts?device_mapping=true&per_page=500" 2>/dev/null) || return 1
+  "$JQ" -r --arg e "$1" '.hosts[] | select(any(.device_mapping[]?; .email == $e and .source == "custom")) | [.id, .hardware_serial, .hostname] | @tsv' <<< "$out"
 }
 fleet_set_mapping()  { fleet_api PUT "/api/v1/fleet/hosts/$1/device_mapping" "$("$JQ" -cn --arg e "$2" '{email: $e}')" >/dev/null; }
 fleet_add_label()    { fleet_api POST "/api/v1/fleet/hosts/$1/labels" "$("$JQ" -cn --arg l "$2" '{labels: [$l]}')" >/dev/null; }
 fleet_remove_label() { fleet_api DELETE "/api/v1/fleet/hosts/$1/labels" "$("$JQ" -cn --arg l "$2" '{labels: [$l]}')" >/dev/null; }
-fleet_user_id()      { fleet_api GET "/api/v1/fleet/users" 2>/dev/null | "$JQ" -r --arg e "$1" '.users[] | select(.email == $e) | .id'; }
+# The console account's id for an address, or nothing; returns 1 when Fleet could not be read.
+fleet_user_id() {
+  local out
+  out=$(fleet_api GET "/api/v1/fleet/users" 2>/dev/null) || return 1
+  "$JQ" -r --arg e "$1" '.users[] | select(.email == $e) | .id' <<< "$out"
+}
 fleet_delete_user()  { fleet_api DELETE "/api/v1/fleet/users/$1" >/dev/null; }
 
 # --- ChromeOS (the Chromebooks, from the Workspace console through GAM) ---------------------------
@@ -265,38 +281,45 @@ cros_json() {
     *) sel="cros_sn $sel" ;;
   esac
   # shellcheck disable=SC2086  # "cros_sn SERIAL" is two words on purpose
-  "$GAM" info cros $sel fields deviceid,serialnumber,status,orgunitpath,annotateduser formatjson 2>/dev/null
+  gam_read info cros $sel fields deviceid,serialnumber,status,orgunitpath,annotateduser formatjson
 }
 cros_field()  { "$JQ" -r ".$2 // empty" <<< "$1"; }
 # Devices annotated to an address: "deviceId<TAB>serialNumber<TAB>status<TAB>annotatedUser" per line.
 # The user: query is the only way to find a device by person, but it is a search index: it also
 # matches recent users, and its status column lagged a disable by ten seconds or more on 2026-10-01.
 # So the query only finds candidates; each one is read back directly before its annotation is
-# checked and its status reported.
+# checked and its status reported. Returns 1 when the query or a candidate's read failed.
 cros_by_user() {
-  local who="$1" id cj
-  for id in $("$GAM" print cros query "user:$who" fields deviceid 2>/dev/null \
+  local who="$1" id cj ids
+  ids=$(gam_read print cros query "user:$who" fields deviceid) || return 1
+  [ -n "$ids" ] || return 1
+  for id in $(printf '%s\n' "$ids" \
       | awk -F, 'NR == 1 { for (i = 1; i <= NF; i++) h[$i] = i; next } NF >= 1 { print $h["deviceId"] }'); do
     cj=$(cros_json "$id")
-    [ -n "$cj" ] || continue
+    [ -n "$cj" ] || return 1
     [ "$(cros_field "$cj" annotatedUser | tr '[:upper:]' '[:lower:]')" = "$(printf '%s' "$who" | tr '[:upper:]' '[:lower:]')" ] || continue
     printf '%s\t%s\t%s\t%s\n' "$id" "$(cros_field "$cj" serialNumber)" "$(cros_field "$cj" status)" "$(cros_field "$cj" annotatedUser)"
   done
+  return 0
 }
 
 # --- more Workspace reads for offboarding --------------------------------------------------------
 # 0 if a completed Calendar transfer from $1 to $2 exists.
 calendar_transferred() {
-  "$GAM" print datatransfers olduser "$1" newuser "$2" status completed 2>/dev/null \
+  gam_read print datatransfers olduser "$1" newuser "$2" status completed \
     | awk -F, 'NR == 1 { for (i = 1; i <= NF; i++) h[$i] = i; next } $h["application"] == "Calendar" { f = 1 } END { exit !f }'
 }
 # Completed transfers from $1: "application<TAB>newOwner" per line.
 transfers_from() {
-  "$GAM" print datatransfers olduser "$1" status completed 2>/dev/null \
+  gam_read print datatransfers olduser "$1" status completed \
     | awk -F, 'NR == 1 { for (i = 1; i <= NF; i++) h[$i] = i; next } { print $h["application"] "\t" $h["newOwnerUserEmail"] }'
 }
-# Personal devices under Workspace mobile management for $1: "resourceId<TAB>status<TAB>model" per line.
+# Personal devices under Workspace mobile management for $1: "resourceId<TAB>status<TAB>model" per
+# line. Returns 1 when the read failed.
 mobiles_of() {
-  "$GAM" print mobile query "email:$1" fields resourceid,status,model 2>/dev/null \
+  local out
+  out=$(gam_read print mobile query "email:$1" fields resourceid,status,model) || return 1
+  [ -n "$out" ] || return 1
+  printf '%s\n' "$out" \
     | awk -F, 'NR == 1 { for (i = 1; i <= NF; i++) h[$i] = i; next } NF > 1 { print $h["resourceId"] "\t" $h["status"] "\t" $h["model"] }'
 }

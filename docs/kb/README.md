@@ -3,7 +3,9 @@
 Written for the person, not the administrator: what to do on the first day, how to put the work
 account on a personal phone, what a company Mac or Chromebook does on its own, what working from
 your own computer means, and what happens when you leave. The welcome kit (`lifecycle/templates/`)
-links to them; the administrator's side of each is in `runbooks/`.
+links to them; the administrator's side of each is in `runbooks/`. The phone article describes the
+flow as designed: the lab has no personal device enrolled, which the top-level README lists under
+what is not built.
 
 | Article | Read it when |
 |---|---|

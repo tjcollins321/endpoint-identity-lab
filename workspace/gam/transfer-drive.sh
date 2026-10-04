@@ -23,7 +23,7 @@ user_exists "$new" || die "no such account: $new"
 
 if drive_transferred "$old" "$new"; then
   log "already transferred: Drive of $old to $new; nothing to do"
-  "$GAM" print datatransfers olduser "$old" newuser "$new" status completed 2>/dev/null
+  gam_read print datatransfers olduser "$old" newuser "$new" status completed
   exit 0
 fi
 
@@ -31,5 +31,5 @@ log "transferring Drive ownership: $old to $new (private and shared files)"
 "$GAM" create datatransfer "$old" drive "$new" all wait 5 24 || die "transfer request failed"
 
 log "verify:"
-"$GAM" print datatransfers olduser "$old" newuser "$new" status completed 2>/dev/null
+gam_read print datatransfers olduser "$old" newuser "$new" status completed
 drive_transferred "$old" "$new" || die "no completed transfer yet; check with: gam print datatransfers olduser $old"

@@ -37,25 +37,25 @@ What it does, reading before every write:
    way, by annotation. The Mac's role software changes with the label within the policy interval.
 5. **Read-back,** then the checklist.
 
-Success looks like (the Marketing hire becomes an engineer; the real transcript is
-`docs/evidence/19-lifecycle-role-change-run.txt`):
+Success looks like (the Marketing hire becomes an engineer: the first leg of
+`docs/evidence/19-lifecycle-role-change-round-trip.txt`, GAM's own output left out):
 
 ```
 t+0:00  == role change for jmbeki@tjcollins.dev: marketing (department Marketing) -> Engineer (OU /Staff, groups: all-staff engineering, device: mac)
-t+0:01  ok: in /Staff
-t+0:03  ok: member of all-staff@tjcollins.dev (in the Engineer role)
-t+0:05  changed: removed from marketing@tjcollins.dev
+t+0:02  ok: in /Staff
+t+0:04  ok: member of all-staff@tjcollins.dev (in the Engineer role)
+t+0:06  changed: removed from marketing@tjcollins.dev
 t+0:07  changed: added to engineering@tjcollins.dev
-t+0:09  changed: title Software Engineer, department Engineering
-t+0:11  changed: vm2-fleet.local removed from role-marketing
-t+0:11  changed: vm2-fleet.local added to role-engineer
-t+0:11  == verify jmbeki@tjcollins.dev
-t+0:12    OU: /Staff (role: /Staff)
-t+0:14    title: Software Engineer; department: Engineering; manager: aengineer@tjcollins.dev
-t+0:16    group all-staff@tjcollins.dev: member
-t+0:18    group engineering@tjcollins.dev: member
-t+0:19    Fleet host Z597CMKJ30: labels role-engineer
-t+0:19  == 0 failed
+t+0:12  changed: title Software Engineer, department Engineering
+t+0:14  changed: vm2-fleet.local removed from role-marketing
+t+0:15  changed: vm2-fleet.local added to role-engineer
+t+0:15  == verify jmbeki@tjcollins.dev
+t+0:15    OU: /Staff (role: /Staff)
+t+0:18    title: Software Engineer; department: Engineering; manager: aengineer@tjcollins.dev
+t+0:20    group all-staff@tjcollins.dev: member
+t+0:22    group engineering@tjcollins.dev: member
+t+0:25    Fleet host Z597CMKJ30: labels role-engineer
+t+0:26  == 0 failed
 ```
 
 A one-off grant shows as `ok: kept <group> (not in the catalog: a one-off grant; review it, or
@@ -70,6 +70,10 @@ lifecycle/audit-access.sh
 
 The repeat changes nothing; the audit shows the account matching its new role. On the Mac,
 `sudo scripts/mac-verify.sh engineer` judges the engineer's apps and tooling once the policy has run.
+A transfer the other way, Engineer to Marketing, with the role's app arriving on the Mac and single
+sign-on to the Fleet console refused afterwards, is section 4 of
+`docs/evidence/17-lifecycle-one-hire-arc.txt` and the two images `18-one-hire-2-transferred.png`
+and `18-one-hire-3-sso-follows-group.png` beside it.
 
 ## Related changes
 
@@ -83,3 +87,11 @@ The repeat changes nothing; the audit shows the account matching its new role. O
 - **The catalog decides what is removed.** The first design removed every group not in the new
   role; the exceptions rule replaced it after thinking through transfers in a tenant where one-off
   grants exist. The strict option keeps the other behavior available where a policy wants it.
+- **One failed read became four findings.** A run of `lifecycle/audit-access.sh` reported an
+  offboarded account as suspended outside `/Offboarded`, in the wrong OU, and missing both of its
+  role's groups. Nothing had changed: one directory read had come back empty, and the script
+  judged the empty OU as if it were the account's state. The run eight minutes earlier and the
+  live directory both showed the account where it belonged. The audit now reads each account
+  once, retries an empty read, and reports an account it cannot read as not read, without judging
+  it; the run then exits non-zero. Tested with a wrapper that makes one read fail (recovers) and
+  every read fail (one "not read" line, no findings).

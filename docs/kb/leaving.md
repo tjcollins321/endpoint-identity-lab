@@ -14,7 +14,7 @@ before then.
 ## On the last day
 
 Access ends all at once: sessions are signed out, every app that was authorized to your account is
-disconnected, and the account is suspended. Mail sent to you is retained but not delivered to you, and a copy of new mail goes to your manager so work does not stall; nobody reads your old mailbox.
+disconnected, and the account is suspended. The mail already in your mailbox is retained. New mail sent to your address is no longer delivered to you and goes to your manager instead, so work does not stall; nobody reads your old mailbox.
 If you added the work account to a personal phone, it is removed from the phone, along with the
 work mail and calendar on it; nothing personal is touched.
 

@@ -1,0 +1,56 @@
+# lifecycle/audit-access.sh catching drift, 2026-10-04, after the day's lifecycle runs: every account against the role catalog, read-only. Between sections 1 and 2 the Marketing hire was added by hand, in the Admin console, to the sales group, which belongs to another role. The audit reports it and exits non-zero; lifecycle/change-role.sh to her own role converges the account, removing only that membership; the audit is clean again. The four leavers are in /Offboarded and skipped; the administrator has no catalog role and is listed for review. Offsets from the start of each run.
+
+# 1. before: lifecycle/audit-access.sh
+t+0:00  == access review against the catalog: contractor engineer marketing sales
+t+0:05      acontractor@tjcollins.dev: Contractor (OU /Contractors; groups contractors@tjcollins.dev)
+t+0:09      aengineer@tjcollins.dev: Engineer (OU /Staff; groups all-staff@tjcollins.dev engineering@tjcollins.dev)
+t+0:12      csalazar@tjcollins.dev: offboarded (Offboarded 2026-10-01 by offboard.sh; delete on or after 2026-10-31); skipped
+t+0:16      jmbeki@tjcollins.dev: Marketing (OU /Staff; groups all-staff@tjcollins.dev marketing@tjcollins.dev)
+t+0:18      mreyes@tjcollins.dev: offboarded (Offboarded 2026-10-01 by offboard.sh; delete on or after 2026-10-31); skipped
+t+0:22      praman@tjcollins.dev: offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03); skipped
+t+0:24      shaddad@tjcollins.dev: offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03); skipped
+t+0:30    review   tj@tjcollins.dev: no catalog role (department 'none', OU /); groups: all-staff@tjcollins.dev contractors@tjcollins.dev engineering@tjcollins.dev marketing@tjcollins.dev sales@tjcollins.dev
+t+0:30  == 8 accounts, 0 mismatch(es), 1 item(s) to review
+
+# 2. after the group was added by hand: lifecycle/audit-access.sh
+t+0:00  == access review against the catalog: contractor engineer marketing sales
+t+0:03      acontractor@tjcollins.dev: Contractor (OU /Contractors; groups contractors@tjcollins.dev)
+t+0:05      aengineer@tjcollins.dev: Engineer (OU /Staff; groups all-staff@tjcollins.dev engineering@tjcollins.dev)
+t+0:06      csalazar@tjcollins.dev: offboarded (Offboarded 2026-10-01 by offboard.sh; delete on or after 2026-10-31); skipped
+t+0:09      jmbeki@tjcollins.dev: Marketing (OU /Staff; groups all-staff@tjcollins.dev marketing@tjcollins.dev sales@tjcollins.dev)
+t+0:09    MISMATCH jmbeki@tjcollins.dev: in sales@tjcollins.dev, which belongs to another role, not Marketing
+t+0:10      mreyes@tjcollins.dev: offboarded (Offboarded 2026-10-01 by offboard.sh; delete on or after 2026-10-31); skipped
+t+0:11      praman@tjcollins.dev: offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03); skipped
+t+0:12      shaddad@tjcollins.dev: offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03); skipped
+t+0:15    review   tj@tjcollins.dev: no catalog role (department 'none', OU /); groups: all-staff@tjcollins.dev contractors@tjcollins.dev engineering@tjcollins.dev marketing@tjcollins.dev sales@tjcollins.dev
+t+0:15  == 8 accounts, 1 mismatch(es), 1 item(s) to review
+
+# 3. converge: lifecycle/change-role.sh jmbeki marketing
+t+0:00  == role change for jmbeki@tjcollins.dev: marketing (department Marketing) -> Marketing (OU /Staff, groups: all-staff marketing, device: mac)
+t+0:02  ok: in /Staff
+t+0:04  ok: member of all-staff@tjcollins.dev (in the Marketing role)
+t+0:04  ok: member of marketing@tjcollins.dev (in the Marketing role)
+Group: sales@tjcollins.dev, Remove 1 Member
+  Group: sales@tjcollins.dev, Member: jmbeki@tjcollins.dev, Removed: Role: MEMBER
+t+0:06  changed: removed from sales@tjcollins.dev
+t+0:07  ok: title Marketing Manager, department Marketing
+t+0:09  ok: vm2-fleet.local carries the role-marketing label
+t+0:09  == verify jmbeki@tjcollins.dev
+t+0:10    OU: /Staff (role: /Staff)
+t+0:12    title: Marketing Manager; department: Marketing; manager: aengineer@tjcollins.dev
+t+0:14    group all-staff@tjcollins.dev: member
+t+0:16    group marketing@tjcollins.dev: member
+t+0:19    Fleet host Z597CMKJ30: labels role-marketing
+t+0:20  == 0 failed
+
+# 4. after: lifecycle/audit-access.sh
+t+0:00  == access review against the catalog: contractor engineer marketing sales
+t+0:03      acontractor@tjcollins.dev: Contractor (OU /Contractors; groups contractors@tjcollins.dev)
+t+0:06      aengineer@tjcollins.dev: Engineer (OU /Staff; groups all-staff@tjcollins.dev engineering@tjcollins.dev)
+t+0:07      csalazar@tjcollins.dev: offboarded (Offboarded 2026-10-01 by offboard.sh; delete on or after 2026-10-31); skipped
+t+0:09      jmbeki@tjcollins.dev: Marketing (OU /Staff; groups all-staff@tjcollins.dev marketing@tjcollins.dev)
+t+0:10      mreyes@tjcollins.dev: offboarded (Offboarded 2026-10-01 by offboard.sh; delete on or after 2026-10-31); skipped
+t+0:11      praman@tjcollins.dev: offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03); skipped
+t+0:12      shaddad@tjcollins.dev: offboarded (Offboarded 2026-10-04 by offboard.sh; delete on or after 2026-11-03); skipped
+t+0:16    review   tj@tjcollins.dev: no catalog role (department 'none', OU /); groups: all-staff@tjcollins.dev contractors@tjcollins.dev engineering@tjcollins.dev marketing@tjcollins.dev sales@tjcollins.dev
+t+0:16  == 8 accounts, 0 mismatch(es), 1 item(s) to review

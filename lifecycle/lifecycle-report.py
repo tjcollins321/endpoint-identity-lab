@@ -81,9 +81,9 @@ def fleet_get(path):
     url, token = fleet_session()
     if not url or not token:
         return None
-    # The server sits behind a Cloudflare tunnel, which refuses Python's default User-Agent;
-    # curl's passes, so the request names itself the way curl does.
-    req = urllib.request.Request(url + path, headers={"Authorization": "Bearer " + token, "User-Agent": "curl/8.7 lifecycle-report"})
+    # The server sits behind a Cloudflare tunnel, which refuses Python's default User-Agent, so the
+    # request names itself for what it is.
+    req = urllib.request.Request(url + path, headers={"Authorization": "Bearer " + token, "User-Agent": "endpoint-identity-lab/lifecycle-report"})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
 
@@ -95,7 +95,7 @@ def fleet_hosts():
         return {}
     hosts = {}
     for h in data.get("hosts", []):
-        full = fleet_get("/api/v1/fleet/hosts/%d" % h["id"]).get("host", {})
+        full = (fleet_get("/api/v1/fleet/hosts/%d" % h["id"]) or {}).get("host", {})
         pols = full.get("policies") or []
         passing = sum(1 for p in pols if p.get("response") == "pass")
         failing = [p["name"] for p in pols if p.get("response") == "fail"]

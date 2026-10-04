@@ -53,9 +53,32 @@ qualify() {
   esac
 }
 
-# 0 if the account exists (active or suspended), 1 otherwise.
+# gam_read ARGS...: a GAM read, its output on stdout. Google's APIs fail the odd valid request
+# (the Data Transfer API returned 400 invalidArgument to about one in ten identical reads on
+# 2026-10-04), and GAM does not retry those. So a read that fails is tried three times, unless
+# the exit status is itself an answer: 56, does not exist, or 26, check suspended's "suspended".
+# The last exit status is returned, so a caller can tell an empty answer from no answer.
+gam_read() {
+  local out rc n=0
+  while :; do
+    out=$("$GAM" "$@" 2>/dev/null); rc=$?
+    if [ "$rc" -eq 0 ] || [ "$rc" -eq 56 ] || [ "$rc" -eq 26 ]; then break; fi
+    n=$((n + 1))
+    [ "$n" -lt 3 ] || break
+    sleep 2
+  done
+  [ -z "$out" ] || printf '%s\n' "$out"
+  return "$rc"
+}
+
+# 0 if the account exists (active or suspended), 1 if GAM says it does not. A read that keeps
+# failing is neither: the script stops rather than take it for absence.
 user_exists() {
-  "$GAM" info user "$1" quick >/dev/null 2>&1
+  local rc
+  gam_read info user "$1" quick >/dev/null; rc=$?
+  [ "$rc" -ne 0 ] || return 0
+  [ "$rc" -ne 56 ] || return 1
+  die "could not read $1 from the directory after three tries (gam exit $rc); rerun"
 }
 
 # 0 if the group exists, 1 otherwise.
@@ -74,12 +97,12 @@ user_names() {
 # Prints the suspension reason (ADMIN for an administrator's suspension; Google's own holds
 # such as WEB_LOGIN_REQUIRED on a fresh account) or nothing when the account is active.
 suspension_reason() {
-  "$GAM" check suspended "$1" 2>/dev/null | sed -n 's/.*Suspension Reason: //p'
+  gam_read check suspended "$1" | sed -n 's/.*Suspension Reason: //p'
 }
 
 # 0 if the account is suspended for any reason, 1 if active. Callers check user_exists first.
 user_suspended() {
-  "$GAM" check suspended "$1" >/dev/null 2>&1
+  gam_read check suspended "$1" >/dev/null
   [ $? -eq 26 ]
 }
 
@@ -120,8 +143,8 @@ resolve_username() {
 # 0 if a completed Drive transfer from $1 to $2 (or to anyone, when $2 is empty) exists.
 drive_transferred() {
   if [ -n "${2:-}" ]; then
-    "$GAM" print datatransfers olduser "$1" newuser "$2" status completed 2>/dev/null | tail -n +2 | grep -q .
+    gam_read print datatransfers olduser "$1" newuser "$2" status completed | tail -n +2 | grep -q .
   else
-    "$GAM" print datatransfers olduser "$1" status completed 2>/dev/null | tail -n +2 | grep -q .
+    gam_read print datatransfers olduser "$1" status completed | tail -n +2 | grep -q .
   fi
 }

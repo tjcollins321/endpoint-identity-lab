@@ -8,7 +8,7 @@
 # usage: offboard.sh [-e] [-m new-owner] [-y] [-D] [-n] <user>
 #   -e  emergency form: cut access and stop; the rest can follow
 #   -m  who receives the Drive files and the calendars (usually the manager)
-#   -y  lock a Fleet-managed Mac without asking
+#   -y  lock a Fleet-managed Mac without asking (a virtual Mac is never locked)
 #   -D  skip the device steps
 #   -n  dry run
 # Exit 0 all ok, 1 a step failed, 2 usage error.
@@ -41,6 +41,7 @@ if [ -n "$owner" ]; then
   [ "$owner" != "$addr" ] || die "the new owner cannot be the leaver"
 fi
 admin=$(lab_admin)
+[ -n "$admin" ] || die "could not determine the admin address from gam oauth info; aborting before any device is remapped"
 role=$(role_for_department "$(user_department "$addr")" || echo "")
 log "== offboarding $addr (${role:-no catalog role})$([ "$emergency" -eq 1 ] && echo ', emergency form: access only')"
 
@@ -79,11 +80,12 @@ else
     fail "Calendar transfer to $owner failed"
   fi
 fi
-manual "mail: forward new mail to ${owner:-the manager} with a Gmail routing rule, which has no API: Admin console, Apps, Google Workspace, Gmail, Routing, add a rule for envelope recipient $addr (inbound and internal), Modify message, Also deliver to ${owner:-the manager}; the mailbox keeps its copy for retention"
+manual "mail: redirect new mail to ${owner:-the manager} with the recipient address map, which has no API: Admin console, Apps, Google Workspace, Gmail, Routing, Email forwarding using recipient address map, add $addr mapped to ${owner:-the manager}, all incoming messages; Google delivers nothing new to a suspended mailbox (runbooks/offboarding.md, step 3)"
 
 # 3. Access removed: every group membership.
-groups=$(user_groups "$addr")
-if [ -z "$groups" ]; then
+if ! groups=$(user_groups "$addr"); then
+  fail "could not read the group memberships of $addr; none removed on this run"
+elif [ -z "$groups" ]; then
   ok "no group memberships"
 else
   while read -r g; do
@@ -99,7 +101,9 @@ fi
 # 4. The leavers' OU, with the date and the earliest deletion date in the account note.
 delete_on=$(days_from_today "$RETENTION_DAYS")
 ou=$(user_ou "$addr")
-if [ "$ou" = "$OFFBOARDED_OU" ]; then
+if [ -z "$ou" ]; then
+  fail "could not read the OU of $addr; not moved on this run"
+elif [ "$ou" = "$OFFBOARDED_OU" ]; then
   note=$(user_note "$addr")
   ok "in $OFFBOARDED_OU${note:+ ($note)}"
   d=$(printf '%s' "$note" | sed -n 's/.*delete on or after \([0-9-]*\).*/\1/p')
@@ -109,11 +113,12 @@ elif do_cmd "move $addr from $ou to $OFFBOARDED_OU" "$GAM" update user "$addr" o
 else
   fail "could not move $addr to $OFFBOARDED_OU"
 fi
-manual "on or after $delete_on: workspace/gam/delete.sh $addr (it refuses unless suspended, in $OFFBOARDED_OU, with Drive transferred), then remove the routing rule"
+manual "on or after $delete_on: workspace/gam/delete.sh $addr (it refuses before that date, and unless suspended, in $OFFBOARDED_OU, with Drive transferred), then remove the address-map row"
 
 # 5. The work account on personal devices under Workspace management.
-mobiles=$(mobiles_of "$addr")
-if [ -z "$mobiles" ]; then
+if ! mobiles=$(mobiles_of "$addr"); then
+  fail "could not read the personal devices of $addr; no account wipe sent on this run"
+elif [ -z "$mobiles" ]; then
   ok "no personal devices under Workspace mobile management"
 else
   while IFS="$(printf '\t')" read -r rid mstatus model; do
@@ -136,17 +141,24 @@ touched_macs=""
 if [ "$skip_device" -eq 1 ]; then
   ok "device steps skipped (-D)"
 else
-  macs=$(fleet_hosts_by_email "$addr")
-  if [ -z "$macs" ]; then
+  if ! macs=$(fleet_hosts_by_email "$addr"); then
+    fail "could not read Fleet for the Macs mapped to $addr; none locked or reclaimed on this run"
+  elif [ -z "$macs" ]; then
     ok "no Fleet-managed Mac mapped to $addr"
   else
-    while IFS="$(printf '\t')" read -r hid serial hname; do
+    # The rows come in on descriptor 3, so standard input inside the loop is still the terminal
+    # and the lock prompt below can ask.
+    while IFS="$(printf '\t')" read -r hid serial hname <&3; do
       [ -n "$hid" ] || continue
       touched_macs="$touched_macs $serial"
       host=$(fleet_host_json "$serial")
-      lock=$(fleet_host_lock "$host"); pend=$(fleet_host_pending "$host")
+      lock=$(fleet_host_lock "$host"); pend=$(fleet_host_pending "$host"); model=$(fleet_host_model "$host")
       if [ "$lock" = "locked" ] || [ "$pend" = "lock" ]; then
         ok "$hname ($serial) is $lock${pend:+, pending $pend}"
+      elif [ "${model#VirtualMac}" != "$model" ]; then
+        # A virtual Mac never draws the lock's PIN screen, so a lock there cannot be undone.
+        warn "$hname ($serial) is a virtual Mac ($model): not locked, with or without -y"
+        manual "virtual Mac $hname ($serial): not locked, since its PIN screen never draws and the lock cannot be undone; shut the VM down, or wipe it, instead"
       elif [ "$DRYRUN" -eq 1 ]; then
         would "lock $hname ($serial) through Fleet (it shows a PIN screen until unlocked)"
       else
@@ -159,7 +171,7 @@ else
         if [ "$go" -eq 1 ]; then
           if "$FLEETCTL" mdm lock --host "$serial"; then changed "lock sent to $hname ($serial)"; else fail "lock failed for $hname"; fi
         else
-          manual "lock the Mac: fleetctl mdm lock --host $serial (not sent: no confirmation; rerun with -y)"
+          manual "lock the Mac unless it is already in hand: fleetctl mdm lock --host $serial (not sent: no confirmation; a rerun no longer finds the Mac by its mapping, so send it by hand)"
         fi
       fi
       for l in $(role_all_labels); do
@@ -169,10 +181,11 @@ else
       done
       if do_cmd "return $hname to IT custody (mapping -> $admin)" fleet_set_mapping "$hid" "$admin"; then [ "$DRYRUN" -eq 1 ] || changed "$hname mapped to $admin"; else fail "could not remap $hname"; fi
       manual "when the Mac ($hname, $serial) returns: fleetctl mdm unlock --host $serial shows the PIN; then re-provision it for the next person (runbooks/mac-provisioning-fleet.md)"
-    done <<< "$macs"
+    done 3<<< "$macs"
   fi
-  croses=$(cros_by_user "$addr")
-  if [ -z "$croses" ]; then
+  if ! croses=$(cros_by_user "$addr"); then
+    fail "could not read the Chromebooks annotated to $addr; none disabled on this run"
+  elif [ -z "$croses" ]; then
     ok "no Chromebook annotated to $addr"
   else
     while IFS="$(printf '\t')" read -r cid cserial cstatus _; do
@@ -191,8 +204,9 @@ else
 fi
 
 # 7. Application accounts that identity does not remove: the Fleet console user JIT created.
-fid=$(fleet_user_id "$addr")
-if [ -z "$fid" ]; then
+if ! fid=$(fleet_user_id "$addr"); then
+  fail "could not read Fleet's users; the console account of $addr was not checked on this run"
+elif [ -z "$fid" ]; then
   ok "no Fleet console account"
 elif do_cmd "delete the Fleet console account (just-in-time provisioning creates and never removes)" fleet_delete_user "$fid"; then
   [ "$DRYRUN" -eq 1 ] || changed "Fleet console account deleted"
@@ -204,9 +218,9 @@ fi
 log "== verify $addr"
 log "  suspended: $(suspension_reason "$addr")"
 log "  OU: $(user_ou "$addr")"
-log "  groups: $(user_groups "$addr" | tr '\n' ' ')"
+if g=$(user_groups "$addr"); then log "  groups: $(if [ -n "$g" ]; then printf '%s\n' "$g"; fi | tr '\n' ' ')"; else log "  groups: could not read"; fi
 log "  transfers completed: $(transfers_from "$addr" | tr '\t' '>' | tr '\n' ' ')"
-log "  personal devices under management: $(mobiles_of "$addr" | grep -c .)"
+if m=$(mobiles_of "$addr"); then log "  personal devices under management: $(printf '%s' "$m" | grep -c .)"; else log "  personal devices under management: could not read"; fi
 for serial in $touched_macs; do
   host=$(fleet_host_json "$serial")
   pend=$(fleet_host_pending "$host")
@@ -215,5 +229,5 @@ done
 while IFS="$(printf '\t')" read -r cid cserial cstatus _; do
   [ -n "$cid" ] && log "  Chromebook $cserial: $cstatus"
 done <<< "$(cros_by_user "$addr")"
-log "  Fleet console account: $(fleet_user_id "$addr" | grep -q . && echo present || echo none)"
+if fid=$(fleet_user_id "$addr"); then log "  Fleet console account: $([ -n "$fid" ] && echo present || echo none)"; else log "  Fleet console account: could not read"; fi
 summary

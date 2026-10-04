@@ -3,7 +3,8 @@
 # Idempotent, so it doubles as the remediation for the "Google Chrome installed" policy: on a Mac
 # where Chrome is present and validly signed it prints the version and exits 0 without touching
 # anything. Runs as root under fleetd; downloads Google's universal build over HTTPS and verifies
-# Apple's notarization before anything lands in /Applications.
+# its signature and Apple's notarization on the mounted image, before the old copy is removed and
+# anything lands in /Applications; a bad download leaves the Mac as it was.
 #
 # The health check is a shallow `codesign --verify` on purpose: a deep, strict verification fails
 # on a Chrome that has updated itself in place, and would reinstall a healthy browser. A present
@@ -37,10 +38,12 @@ curl -fsSL --retry 3 -o "$WORK/chrome.dmg" "$URL"
 mkdir "$MNT"
 hdiutil attach "$WORK/chrome.dmg" -mountpoint "$MNT" -nobrowse -quiet
 
+codesign --verify --deep --strict "$MNT/Google Chrome.app"
+spctl --assess --type execute "$MNT/Google Chrome.app"
+
 rm -rf "$APP"
 ditto "$MNT/Google Chrome.app" "$APP"
 hdiutil detach "$MNT" -quiet
 
-codesign --verify --deep --strict "$APP"
-spctl --assess --type execute "$APP"
+codesign --verify "$APP"
 echo "Google Chrome $(version) installed."

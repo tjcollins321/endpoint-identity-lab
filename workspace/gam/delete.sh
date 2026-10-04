@@ -3,10 +3,11 @@
 #
 # usage: delete.sh [-f] user
 #
-# Refuses unless the account is suspended and a completed Drive transfer from it exists, which
-# is the order suspend.sh and transfer-drive.sh produce; -f skips both checks. A deleted account
-# can be restored from the Admin console for 20 days. Idempotent: a missing account is reported
-# as already absent (exit 0).
+# Refuses unless the account is suspended, a completed Drive transfer from it exists, it is in
+# the leavers' OU, and the deletion date lifecycle/offboard.sh wrote into its note has arrived,
+# which is the order the offboarding produces; -f skips the checks. An account with no date in its
+# note (offboarded by hand) is not held back. A deleted account can be restored from the Admin
+# console for 20 days. Idempotent: a missing account is reported as already absent (exit 0).
 
 set -u
 # shellcheck source-path=SCRIPTDIR
@@ -35,8 +36,13 @@ offboarded_ou="${OFFBOARDED_OU:-/Offboarded}"
 if [ "$force" -eq 0 ]; then
   user_suspended "$user" || die "$user is active; run suspend.sh first, or use -f"
   drive_transferred "$user" || die "no completed Drive transfer from $user; run transfer-drive.sh first, or use -f"
-  ou=$("$GAM" info user "$user" quick 2>/dev/null | sed -n 's/^ *Google Org Unit Path: //p' | head -1)
+  info=$("$GAM" info user "$user" quick 2>/dev/null)
+  ou=$(printf '%s\n' "$info" | sed -n 's/^ *Google Org Unit Path: //p' | head -1)
   [ "$ou" = "$offboarded_ou" ] || die "$user is in $ou, not $offboarded_ou; run lifecycle/offboard.sh first, or use -f"
+  delete_on=$(printf '%s\n' "$info" | sed -n 's/.*delete on or after \([0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]\).*/\1/p' | head -1)
+  if [ -n "$delete_on" ] && [ "$(date '+%Y-%m-%d')" \< "$delete_on" ]; then
+    die "$user is in its retention period; delete on or after $delete_on, or use -f"
+  fi
 fi
 
 log "deleting $user"

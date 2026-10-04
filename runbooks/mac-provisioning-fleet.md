@@ -4,6 +4,13 @@
 under Fleet and receive the Workstations baseline before it goes to an employee. Done at the
 machine by an administrator; the employee's first login happens afterward.
 
+Nothing here binds the Mac to the directory, so the employee's account on it is a local one,
+created at handover (System Settings, Users & Groups; an administrator only where the role needs
+it, as `scripts/mac-onboard.sh engineer` does for Homebrew). The lab's virtual machines keep the
+single administrator account from the golden image, which stands in for the person. With Automated
+Device Enrollment the person would create the account during Setup Assistant, named from the
+identity provider sign-in, and the MDM would add and rotate a separate administrator account.
+
 **When NOT to use this:** a Mac already enrolled in another MDM, which is
 `mdm-migration-jamf-to-fleet.md`; a Mac bought through Apple Business Manager, which would enroll
 itself during Setup Assistant with the same package as its bootstrap package, a flow this lab

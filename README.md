@@ -13,8 +13,10 @@ two macOS virtual machines on the MacBook managed by Fleet with configuration sh
 a ChromeOS Flex virtual machine enrolled to the Workspace tenant. Every managed Mac other than the
 MacBook is a VM, and the Chromebook is a VM, stated here so the scale is not misread.
 
-**Start here if you have two minutes:** the [onboarding runbook](runbooks/onboarding.md), the
-[role catalog](lifecycle/README.md), then [what changes at 500 users](docs/design.md#what-changes-at-500-users).
+**Start here if you have two minutes:** [one hire, start to finish](docs/demo.md), a single
+fictional person taken through onboarding, a transfer, and offboarding, with the real output and
+screenshots; then the [role catalog](lifecycle/README.md) and
+[what changes at 500 users](docs/design.md#what-changes-at-500-users).
 
 ---
 
@@ -99,12 +101,13 @@ lifecycle/offboard.sh -m aengineer praman        # or -e for the emergency form:
 
 The order is the point. Access first: app passwords, backup codes, and tokens revoked, sessions
 signed out, the account suspended, which ends SAML sign-in everywhere. Then Drive and the
-calendars to the manager through the Data Transfer API, mail retained in place. Then every group
+calendars to the manager through the Data Transfer API, the mailbox retained in place and new mail
+redirected to the manager in the console. Then every group
 off and the account into `/Offboarded` with its deletion date in the note. Then the work account
 wiped from personal devices, the Mac locked and returned to IT custody, the Chromebook disabled;
 Jamf Now devices on the checklist, since it has no API. Then the console account that just-in-time
-provisioning created, deleted. Deletion waits thirty days and `delete.sh` refuses until the earlier
-steps are done. Runbook: [offboarding](runbooks/offboarding.md).
+provisioning created, deleted. Deletion waits thirty days: `delete.sh` refuses until the earlier
+steps are done and the date in the account note has arrived. Runbook: [offboarding](runbooks/offboarding.md).
 
 ## Role changes
 
@@ -113,6 +116,11 @@ differs, the new role's groups added, other roles' groups removed, one-off grant
 title and department updated, the Mac moved between role labels or reclaimed when the entitlement
 changes class. `lifecycle/audit-access.sh` lists drift against the catalog at any time. Runbook:
 [role change](runbooks/role-change.md).
+
+An engineer's transfer to Marketing, from [the walkthrough](docs/demo.md): the groups swapped in
+the directory, and Fleet installing the new role's app on her Mac minutes after the label moved.
+
+![A transfer: the groups in the Admin console and the role's app arriving through Fleet](docs/evidence/18-one-hire-2-transferred.png)
 
 ## Where to look
 
@@ -124,6 +132,7 @@ changes class. `lifecycle/audit-access.sh` lists drift against the catalog at an
 | [`mdm/`](mdm/) | the Jamf Now blueprints and a redacted profile |
 | [`fleet/`](fleet/) | the Compose stack and everything Fleet applies, as YAML, profiles, policies, and scripts |
 | [`chromeos/`](chromeos/) | the ChromeOS policies by device OU and by user OU |
+| [`docs/demo.md`](docs/demo.md) | one hire from onboarding to offboarding, with the real output, the screenshots, and what went wrong on the day |
 | [`docs/design.md`](docs/design.md) | the design, the decisions behind it, and what changes at 500 users |
 | [`docs/kb/`](docs/kb/) | help articles for the person: first day, personal phone, company Mac, Chromebook, own computer, leaving |
 | [`docs/evidence/`](docs/evidence/) | redacted screenshots and transcripts, each mapped to the statement it supports |
@@ -135,19 +144,27 @@ changes class. `lifecycle/audit-access.sh` lists drift against the catalog at an
 | Outcome | Where | Evidence |
 |---|---|---|
 | Workspace tenant: OUs, groups, enforced 2-Step Verification, session and password policy, OAuth app control, mail authentication | `workspace/tenant-settings.md` | 02, 03, 04 |
-| GAM lifecycle scripts run end to end; role-based onboarding, offboarding, and role change run against the tenant, Fleet, and the Chromebook for four fictional hires, one per role: accounts in the right OU with title, department, manager, and groups; the Macs mapped and labeled, the Chromebook annotated, the welcome kit rendered and sent; a contractor and the Chromebook's holder offboarded with the device disabled and reclaimed; a role change round-tripped with the Mac's label moved by API | `lifecycle/`, `workspace/gam/`, the three runbooks | 05, 14, 15, 16, 19, 20 |
+| GAM lifecycle scripts run end to end; role-based onboarding, offboarding, and role change run against the tenant, Fleet, and the Chromebook for five fictional hires: accounts in the right OU with title, department, manager, and groups; the Macs mapped and labeled, the Chromebook annotated, the welcome kit rendered and sent. One hire taken from onboarding through a transfer to offboarding: single sign-on to the Fleet console allowed and then refused as her group changed, the new role's app delivered by label, her Mac locked and returned to IT custody, the console account deleted, deletion refused until the retention date, and her mail redirected in the console and tested. An engineer offboarded by the emergency form and then the full form; the Chromebook's holder offboarded with the device disabled and reclaimed; a role change round-tripped with the Mac's label moved by API; the access audit catching a group added by hand, the role change removing it, and the account-to-device report at the end state | `lifecycle/`, `workspace/gam/`, the three runbooks, [`docs/demo.md`](docs/demo.md) | 05, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24 |
 | The iPad and the MacBook enrolled in Jamf Now on two blueprints; a VM enrolled there and later migrated | `mdm/blueprints.md`, `runbooks/*-jamf.md` | 06, 07 |
 | Two macOS VMs with distinct device identities | `runbooks/macos-vm-lab.md` | 08 |
 | Fleet behind a tunnel with Apple MDM on; the baseline as code; a canary release; a Mac provisioned clean; a Mac migrated from Jamf Now with its recovery key escrowed; a broken policy repaired by its script; role software by label | `fleet/gitops/`, `runbooks/fleet-setup.md`, `mac-provisioning-fleet.md`, `mdm-migration-jamf-to-fleet.md` | 09, 10, 11, 12, 16 |
 | SAML single sign-on from Workspace to the Fleet console, access by group, just-in-time provisioning | `runbooks/sso-app-setup.md` | 13 |
 | A ChromeOS Flex device enrolled; device policy by its OU and user policy by the person's OU, verified on the device as a staff member and as a contractor; assigned through the lifecycle, disabled on exit with the return message on screen, re-enabled for the next person | `runbooks/chromeos-enrollment.md`, `chromeos/policies.md` | 16, 20 |
+| The per-user Mac setup by role and its read-back, run on a managed Mac: six changes, then nothing to do, then every check passing | `scripts/` | 21 |
 | Help articles for the person, runbooks for the administrator, a design note and decision notes | `docs/kb/`, `runbooks/`, `docs/design.md`, `decisions/` | |
+
+State at this commit: one of the two virtual Macs is locked. The remote lock was tested on it on
+2026-10-04, and a virtual Mac never draws the lock's PIN screen, so it stays locked until it is
+rebuilt; the unlock by PIN is not shown anywhere here, and `lifecycle/offboard.sh` now refuses to
+lock virtual hardware (Problems hit in [the offboarding runbook](runbooks/offboarding.md)).
 
 Not built, on purpose, and named rather than implied: Automated Device Enrollment and Apple
 Business Manager (no registered business, so enrollment is user-approved), Context-Aware Access
 (not on this edition; the policy is described), domain-wide delegation (every write runs as the
-administrator, so GAM cannot send mail and the welcome kit is hand-sent), SCIM, Jamf Pro, Fleet
-Premium beyond the trial, phones under management (no device to enroll; the iPad shows the path),
+administrator, so GAM cannot send mail and the welcome kit is hand-sent;
+[the decision](decisions/no-domain-wide-delegation.md)), SCIM, Jamf Pro, Fleet
+Premium beyond the trial, phones under management (no personal device is enrolled, so the
+offboarding account wipe has never run against one; the iPad stays a company device in Jamf Now),
 more than one physical Mac. Nothing here claims more than the tree contains at the commit you are
 reading.
 
@@ -157,5 +174,5 @@ macOS scripts are zsh; GAM and lifecycle scripts are bash 3.2-compatible and she
 the one Python script is standard library only and runs on the admin workstation. No secret is in
 the tree: enroll secrets, tokens, keys, and the tunnel token come from files outside it, and GitOps
 YAML uses variable substitution. Evidence is redacted by cropping; dates and elapsed offsets are
-kept, clock times are removed. The lab was built with Claude Code as a pair; every change was
-reviewed and run by hand.
+kept, clock times are removed. The lab was built with Claude Code as a pair; the evidence comes
+from runs against the lab's own tenant, devices, and Fleet server.

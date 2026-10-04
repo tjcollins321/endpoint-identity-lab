@@ -39,7 +39,8 @@ while IFS=, read -r role first last personal manager start device; do
   [ -z "$manager" ] || set -- "$@" -m "$manager"
   [ -z "$start" ] || set -- "$@" -s "$start"
   [ -z "$device" ] || set -- "$@" -d "$device"
-  if "$@" "$role" "$first" "$last"; then
+  # The loop reads the CSV on stdin; the child gets /dev/null so nothing it runs can eat rows.
+  if "$@" "$role" "$first" "$last" </dev/null; then
     results="$results| $first $last | $role | ok |"$'\n'
   else
     failed_rows=$((failed_rows + 1))

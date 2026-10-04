@@ -13,9 +13,12 @@ writes; the scripts here decide what to do from the role and read everything bac
 | `onboard-batch.sh hires.csv` | the hire record | one `onboard.sh` per row of what an HRIS export or a ticket would deliver (`examples/hires.csv`) |
 | `audit-access.sh` | a review | every account's OU and groups against the catalog: mismatches, and one-off grants to review |
 
-Every script can be re-run: a second run reports `ok:` on every line and changes nothing. Each ends
-with a read-back (`== verify`), the steps a human still does (`== manual steps`), and the count of
-failures; exit 0 all ok, 1 a step failed, 2 usage or catalog error. `-n` is a read-only dry run.
+Every script can be re-run: a second run reports `ok:` on every line and changes nothing. A lookup
+that fails, in the directory or in Fleet, is retried and then reported as `FAIL`, never taken for
+"nothing to do". Each ends with a read-back (`== verify`), the steps a human still does
+(`== manual steps`), and the count of
+failures; exit 0 all ok, 1 a step failed or a precondition did not hold (an unknown role, a missing
+account), 2 usage error. `-n` is a read-only dry run.
 The scripts run on the admin workstation under the admin's own authorization: bash 3.2, shellcheck
 clean, no service account, no domain-wide delegation. When the trigger is a system rather than a
 person, this moves to a service on an always-on runner; `docs/design.md` says what else changes.
@@ -68,13 +71,17 @@ The person-to-device link is Fleet's custom human-device mapping, set by the sam
   account with domain-wide delegation, acting as a user; the tenant grants neither, by decision.
   So `onboard.sh` renders the welcome kit to `lifecycle/outbox/` (ignored by git) and the admin
   sends it from their own mailbox; the initial password is issued from the Admin console or handed
-  over with the device; and a leaver's new mail is copied to the manager by a Gmail routing rule in
-  the console, which has no API, while the mailbox keeps its copy for retention. Delegation, which
+  over with the device; and a leaver's new mail is redirected to the manager by a recipient address
+  map in the console, which has no API, while the mailbox keeps what it already held (Google
+  delivers nothing new to a suspended account). Delegation, which
   opens the whole mailbox, is never a default. Where delegation exists, the same scripts send
   through GAM. At scale the mail and the forwarding come from the HRIS or ticketing integration, or
   from a service identity scoped to sending and mailbox settings.
 - Jamf Now: lock, wipe, and unenroll for the iPad and the admin workstation are console steps.
 - The initial password when no personal address is given; the unlock PIN when a locked Mac returns.
+- The lock on a virtual Mac. `offboard.sh` reads the hardware model from Fleet and never locks a
+  virtual Mac, which cannot draw the PIN screen and so could never be unlocked; the VM is shut down
+  or wiped by hand (`runbooks/offboarding.md`, Problems hit).
 - Slack deactivation, where a free workspace exists; SCIM is the at-scale answer.
 
 ## Command reference
@@ -111,7 +118,8 @@ lifecycle/audit-access.sh
 
 A rehire of an offboarded account is `gam unsuspend user <user>` followed by `change-role.sh`;
 `onboard.sh` refuses it on purpose. Deletion is `workspace/gam/delete.sh`, which refuses unless the
-account is suspended, in `/Offboarded`, and has a completed Drive transfer.
+account is suspended, in `/Offboarded`, has a completed Drive transfer, and has reached the
+deletion date `offboard.sh` wrote into its note.
 
 ## Where the state lives
 

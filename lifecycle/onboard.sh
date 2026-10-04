@@ -13,7 +13,8 @@
 #   -W  resend the welcome kit even if the account existed
 #   -D  skip the device step
 #   -n  dry run: read everything, change nothing
-# Exit 0 all ok, 1 a step failed, 2 usage or catalog error.
+# Exit 0 all ok, 1 a step failed or a precondition did not hold (an unknown role, a missing
+# account), 2 usage error.
 
 set -u
 # shellcheck source-path=SCRIPTDIR
@@ -71,7 +72,8 @@ if [ "$state" = "exists" ]; then
   fi
 else
   if [ -n "$personal" ]; then
-    do_cmd "create $addr in $ROLE_OU, password mailed to $personal" "$GAM_DIR/create-user.sh" -o "$ROLE_OU" -n "$personal" "$first" "$last"
+    if gam_can_send_mail; then pw_route="password mailed to $personal"; else pw_route="password issued by hand (GAM cannot send mail here)"; fi
+    do_cmd "create $addr in $ROLE_OU, $pw_route" "$GAM_DIR/create-user.sh" -o "$ROLE_OU" -n "$personal" "$first" "$last"
   else
     do_cmd "create $addr in $ROLE_OU (no personal address: the admin issues the password by hand)" "$GAM_DIR/create-user.sh" -o "$ROLE_OU" "$first" "$last"
   fi
