@@ -94,4 +94,11 @@ and `18-one-hire-3-sso-follows-group.png` beside it.
   live directory both showed the account where it belonged. The audit now reads each account
   once, retries an empty read, and reports an account it cannot read as not read, without judging
   it; the run then exits non-zero. Tested with a wrapper that makes one read fail (recovers) and
-  every read fail (one "not read" line, no findings).
+  every read fail (one "not read" line, no findings). The listing that feeds the audit had the
+  same gap, found in a review of the tree on 2026-10-04: a failed `gam print users` was an empty
+  loop, so the run printed `0 accounts, 0 mismatch(es)` and exited 0. The listing is now a retried
+  read, and a failed or empty one stops the review non-zero with nothing judged.
+  `lifecycle-report.py` was closed the same way: a failed listing stops it, an account it cannot
+  read is a `NOT READ` row, and a Fleet it cannot read is said above the table instead of
+  printing `none` for every Mac. Tested with wrappers that fail the listing, empty it, and fail
+  one account's read, and with Fleet unreachable.

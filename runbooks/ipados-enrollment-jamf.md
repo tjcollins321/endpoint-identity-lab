@@ -82,7 +82,11 @@ and Admin-managed. If a tile lags, click Sync on the device page and reload.
 - **Unenroll:** device page, the action menu, Unenroll device. Removes the management profile,
   any email account Jamf deployed, and volume-purchased apps with their data. The device record
   stays in inventory until Remove from My Devices.
-- **Lock and erase** are covered in the offboarding runbook.
+- **Lock and erase** are covered in the offboarding runbook. The lock was tested on this iPad on
+  2026-09-29, sent from the device page with a message: the iPad locked at once and showed the
+  message, and Face ID unlocked it, since on iPadOS the command locks the screen and does not lock
+  the person out (Lost Mode does, and needs supervision). Jamf Now's device page keeps no command
+  history, so the test is recorded here and is not pictured in `docs/evidence/`.
 
 ## Problems hit
 

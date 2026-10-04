@@ -122,9 +122,11 @@ suspended, while every file stays where it is. Then the data moves to the manage
 off, and the account goes to the leavers' OU with its deletion date. Then the devices, and last the
 application account that identity does not remove. One step stays in the console, because Gmail
 routing has no API: her address is mapped to her manager's, since Google delivers nothing new to a
-suspended mailbox. A test message sent to her afterwards was dropped for her and delivered to the
-mapped mailbox, with no bounce to the sender
-([`evidence/24-offboard-mail-address-map.png`](evidence/24-offboard-mail-address-map.png)).
+suspended mailbox. A test message sent to her afterwards was delivered to the mapped mailbox and
+dropped for her, with no bounce to the sender
+([`evidence/24-offboard-mail-address-map.png`](evidence/24-offboard-mail-address-map.png)); with
+the map off, the same test bounced
+([`evidence/25-offboard-mail-bounce-without-map.png`](evidence/25-offboard-mail-bounce-without-map.png)).
 Deletion waits:
 
 ```
@@ -175,7 +177,10 @@ the Fleet API ([`evidence/23-lifecycle-report.md`](evidence/23-lifecycle-report.
 
 The two leavers of the day are suspended in `/Offboarded`; the Mac they each held is in IT custody,
 mapped to the administrator, locked; the Chromebook is in IT custody from the earlier Sales
-offboarding.
+offboarding. `2SV off` in the State column is the person's own enrollment: the hire has not set
+up a second factor yet. Enforcement is on for every account
+([`evidence/04-workspace-gam-directory-export.txt`](evidence/04-workspace-gam-directory-export.txt),
+`isEnforcedIn2Sv`), with one day from the first sign-in to enroll.
 
 ## What went wrong on the day
 
@@ -195,8 +200,9 @@ under Problems hit in the [offboarding](../runbooks/offboarding.md) and
   that VM stays locked until it is rebuilt, and the script now refuses to lock virtual hardware.
   The unlock by PIN is therefore not shown anywhere in this repository.
 - **A mail step that had never been run.** The runbook said a leaver's mailbox would keep a copy
-  of new mail. Tested, Google drops mail to a suspended mailbox without a bounce; the step is now
-  the recipient address map, with the result it actually gives.
+  of new mail. Tested, Google delivers nothing to a suspended mailbox, and the sender gets a
+  bounce unless a routing rule takes the message first; the step is now the recipient address
+  map, with the result it actually gives.
 - **A failed read taken for an answer.** The access audit turned one empty directory read into
   four findings on an account that was fine, and the same habit elsewhere would have reported "no
   Mac" with Fleet unreachable. Reads are now retried, and a lookup that still fails is reported

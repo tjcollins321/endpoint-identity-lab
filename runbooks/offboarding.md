@@ -25,8 +25,8 @@ Deletes the account's app passwords, backup verification codes, and OAuth tokens
 session, then suspends. Deprovisioning comes first because Google refuses the backup-code step on
 an account that is already suspended. After this the person cannot sign in anywhere, including
 through SAML to the Fleet console. The mailbox and everything in it are retained, and Google
-blocks new mail to a suspended account from that moment; Drive, Calendar, groups,
-and devices are untouched. Nothing is lost. The checklist says how to finish. A real run of this
+blocks new mail to a suspended account from that moment (until the address map of step 3 is in
+place, a sender gets a bounce); Drive, Calendar, groups, and devices are untouched. Nothing is lost. The checklist says how to finish. A real run of this
 form, then the full form, is `docs/evidence/17-lifecycle-offboard-emergency-then-full.txt`.
 
 ## 2. Full form
@@ -116,8 +116,8 @@ every leaver, a row each.
    leaver's address, Map to address is the manager's.
 4. Messages to affect: **All incoming messages**, so that internal senders are covered too.
 5. Routing options: leave "Also route to original destination" off. The lab tested it on and
-   off with the same result (below): Google drops the delivery to a suspended mailbox either way,
-   so there is nothing to route there. "Add X-Gm-Original-To header" was off.
+   off with the same result (below): with the map in place the delivery to the suspended mailbox
+   is dropped either way, so there is nothing to route there. "Add X-Gm-Original-To header" was off.
 6. **Save.** The console says most changes take effect in a few minutes; this one did.
 7. Verify: send a message to the leaver's address from another account, then Reporting, Email Log
    Search, by recipient. The leaver's line reads Dropped with the address map as the matched rule,
@@ -128,7 +128,10 @@ mapped to the administrator's mailbox standing in for the manager's, first with 
 destination also routed and then without, with the same result both times:
 `docs/evidence/24-offboard-mail-address-map.png` shows the second. What the tests settled: new
 mail after the suspension exists only in the mailbox it is mapped to, not in the leaver's, and
-nobody is told the address is gone. The manager answers senders with context, which does the work of an auto-reply
+nobody is told the address is gone. A third test the same day, with the map switched off, settled
+the other half: the sender received a bounce saying the address does not exist
+(`docs/evidence/25-offboard-mail-bounce-without-map.png`). The map is what keeps a leaver's
+address from reading as dead from the first day. The manager answers senders with context, which does the work of an auto-reply
 without the duplicates one would cause. Remove the leaver's row when the account is deleted.
 Delegation, which opens the whole mailbox to the manager, is never a default here; it is an
 admin-approved, logged exception.
@@ -198,16 +201,19 @@ suspension, the transfers, the group removals, and the move with the actor.
   lookups return failure when the read failed, and `offboard.sh` and `change-role.sh` print
   `FAIL: could not read ...` and end non-zero, so a rerun finishes the job. Tested by injecting
   the failures: Fleet unreachable, each listing failing, the account read failing once and always.
-  Not changed: a read-back line can still print a blank for a single field it could not read, and
-  the report shows a blank row for an account it could not read.
+  Not changed: a read-back line can still print a blank for a single field it could not read.
+  The account-to-device report, which showed a blank row for an account it could not read, was
+  closed later with the audit's listing (`role-change.md`).
 - **The mail step was written before it was run.** Step 3 first described a routing rule with
   "Also deliver to" and said the suspended mailbox would keep its own copy of new mail, and step 1
   said mail kept arriving after suspension. Neither had been tried. Run for the first time on
-  2026-10-04, with the recipient address map, which is the setting made for this: Google drops the
-  delivery to the suspended mailbox, without a bounce, and delivers to the mapped address, whether
-  or not the original destination is also routed. The
+  2026-10-04, with the recipient address map, which is the setting made for this: the message is
+  delivered to the mapped address and the delivery to the suspended mailbox is dropped, whether
+  or not the original destination is also routed, and the sender sees nothing. The first write-up
+  took that for Google's default ("dropped without a bounce"). A control test with the map off
+  showed the sender gets a bounce, so the silence was the map's doing; corrected. The
   steps, the checklist line the script prints, and the help article now say what happens. The
-  checklist lines in transcripts captured before that day keep the old wording.
+  checklist lines in transcripts captured before the step was first run keep the old wording.
 - **A suspension can read back late.** On one emergency run the check one second after the suspend
   call printed `Account Suspended: False`; Google stamped the suspension a second after that, and
   the script's next read, the one it decides on, saw it. The account was suspended throughout the

@@ -6,10 +6,13 @@
 # role change keeps it on purpose. Accounts without a catalog role (administrators, accounts with no
 # department) are listed with their groups. Offboarded accounts are skipped; a suspended account
 # outside the offboarded OU is a finding. An account whose read fails three times is reported as
-# not read and never judged: an empty read is not an empty OU or an empty group list.
+# not read and never judged: an empty read is not an empty OU or an empty group list. The account
+# listing itself is held to the same rule: if it fails, or comes back with no rows, the review
+# stops rather than report a clean result over nothing.
 #
 # usage: audit-access.sh [-q]     -q: findings only, no per-account detail
-# Exit 0 when nothing mismatches and every account was read, 1 otherwise.
+# Exit 0 when nothing mismatches and every account was read, 1 otherwise (including when the
+# account listing could not be read), 2 usage error.
 
 set -u
 # shellcheck source-path=SCRIPTDIR
@@ -41,7 +44,15 @@ retry_read() {
 
 managed=$(role_all_groups | while read -r g; do qualify "$g"; done)
 log "== access review against the catalog: $(role_list | tr '\n' ' ')"
-for addr in $("$GAM" print users fields primaryemail 2>/dev/null | tail -n +2); do
+# The listing is a read like the others: one that fails, or has no rows, is "could not ask", not an
+# empty tenant (the administrator is always a row). gam_read tries three times; then the review
+# stops, non-zero, with nothing judged.
+if ! listing=$(gam_read print users fields primaryemail); then
+  die "could not list the tenant's accounts (gam print users failed after three tries); nothing was reviewed"
+fi
+addrs=$(printf '%s\n' "$listing" | tail -n +2 | grep .)
+[ -n "$addrs" ] || die "the account listing came back with no rows; refusing to report a clean review over an empty read"
+for addr in $addrs; do
   accounts=$((accounts + 1))
   # One read of the account for everything judged below.
   json=$(retry_read user_json "$addr")
