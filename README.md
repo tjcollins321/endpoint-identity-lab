@@ -37,12 +37,14 @@ flowchart TB
   BYOD --> WORK
   WORK --> CH["change-role.sh<br/>OU, groups, title,<br/>device label or reclaim"]
   CH --> WORK
-  WORK --> OFF["offboard.sh"]
-  OFF --> O1["1. Access cut:<br/>tokens, sessions, suspend"]
-  O1 --> O2["2. Drive and Calendar<br/>to the manager"]
-  O2 --> O3["3. Groups off,<br/>/Offboarded OU"]
-  O3 --> O4["4. Mac locked, Chromebook disabled,<br/>work account wiped from phones"]
-  O4 --> O5["5. Console account deleted;<br/>delete.sh after 30 days"]
+  WORK --> LEAVE
+  subgraph LEAVE["offboard.sh"]
+    direction LR
+    O1["1. Access cut:<br/>tokens, sessions,<br/>suspend"] --> O2["2. Drive and<br/>Calendar to<br/>the manager"]
+    O2 --> O3["3. Groups off,<br/>/Offboarded OU"]
+    O3 --> O4["4. Mac locked,<br/>Chromebook disabled,<br/>work account wiped<br/>from phones"]
+    O4 --> O5["5. Console account<br/>deleted; delete.sh<br/>after 30 days"]
+  end
 ```
 
 ## The stack
