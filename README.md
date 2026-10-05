@@ -45,6 +45,8 @@ flowchart TB
     O3 --> O4["4. Mac locked,<br/>Chromebook disabled,<br/>work account wiped<br/>from phones"]
     O4 --> O5["5. Console account<br/>deleted; delete.sh<br/>after 30 days"]
   end
+  LEAVE ~~~~~ PAD[" "]
+  style PAD fill:none,stroke:none
 ```
 
 ## The stack
