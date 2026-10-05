@@ -37,7 +37,7 @@ flowchart TB
   BYOD --> WORK
   WORK --> CH["change-role.sh<br/>OU, groups, title,<br/>device label or reclaim"]
   CH --> WORK
-  WORK --> LEAVE
+  WORK ---> LEAVE
   subgraph LEAVE["offboard.sh"]
     direction LR
     O1["1. Access cut:<br/>tokens, sessions,<br/>suspend"] --> O2["2. Drive and<br/>Calendar to<br/>the manager"]
