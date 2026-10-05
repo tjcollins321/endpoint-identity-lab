@@ -23,7 +23,7 @@ screenshots; then the [role catalog](lifecycle/README.md) and
 ## The lifecycle
 
 ```mermaid
-flowchart LR
+flowchart TB
   HR["Hire record<br/>CSV, ticket, or HRIS"] --> ON["onboard.sh<br/>by role"]
   ON --> WS[("Google Workspace<br/>account in the role's OU,<br/>title, manager, groups")]
   ON --> KIT["Welcome kit<br/>first sign-in, 2SV,<br/>phone, device"]
@@ -37,12 +37,16 @@ flowchart LR
   BYOD --> WORK
   WORK --> CH["change-role.sh<br/>OU, groups, title,<br/>device label or reclaim"]
   CH --> WORK
-  WORK --> OFF["offboard.sh"]
-  OFF --> O1["1. Access cut:<br/>tokens, sessions, suspend"]
-  O1 --> O2["2. Drive and Calendar<br/>to the manager"]
-  O2 --> O3["3. Groups off,<br/>/Offboarded OU"]
-  O3 --> O4["4. Mac locked, Chromebook disabled,<br/>work account wiped from phones"]
-  O4 --> O5["5. Console account deleted;<br/>delete.sh after 30 days"]
+  WORK ---> LEAVE
+  subgraph LEAVE["offboard.sh"]
+    direction LR
+    O1["1. Access cut:<br/>tokens, sessions,<br/>suspend"] --> O2["2. Drive and<br/>Calendar to<br/>the manager"]
+    O2 --> O3["3. Groups off,<br/>/Offboarded OU"]
+    O3 --> O4["4. Mac locked,<br/>Chromebook disabled,<br/>work account wiped<br/>from phones"]
+    O4 --> O5["5. Console account<br/>deleted; delete.sh<br/>after 30 days"]
+  end
+  LEAVE ~~~~~~ PAD[" "]
+  style PAD fill:none,stroke:none
 ```
 
 ## The stack
