@@ -23,7 +23,7 @@ screenshots; then the [role catalog](lifecycle/README.md) and
 ## The lifecycle
 
 ```mermaid
-flowchart LR
+flowchart TB
   HR["Hire record<br/>CSV, ticket, or HRIS"] --> ON["onboard.sh<br/>by role"]
   ON --> WS[("Google Workspace<br/>account in the role's OU,<br/>title, manager, groups")]
   ON --> KIT["Welcome kit<br/>first sign-in, 2SV,<br/>phone, device"]
