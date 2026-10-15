@@ -157,10 +157,8 @@ the directory, and Fleet installing the new role's app on her Mac minutes after 
 | The per-user Mac setup by role and its read-back, run on a managed Mac: six changes, then nothing to do, then every check passing | `scripts/` | 21 |
 | Help articles for the person, runbooks for the administrator, a design note and decision notes | `docs/kb/`, `runbooks/`, `docs/design.md`, `decisions/` | |
 
-State at this commit: one of the two virtual Macs is locked. The remote lock was tested on it on
-2026-10-04, and a virtual Mac never draws the lock's PIN screen, so it stays locked until it is
-rebuilt; the unlock by PIN is not shown anywhere here, and `lifecycle/offboard.sh` now refuses to
-lock virtual hardware (Problems hit in [the offboarding runbook](runbooks/offboarding.md)).
+State at this commit: the lab environment was decommissioned on 2026-10-15; the repository
+documents the lab as it was built and evidenced.
 
 Not built, on purpose, and named rather than implied: Automated Device Enrollment and Apple
 Business Manager (no registered business, so enrollment is user-approved), Context-Aware Access
